@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Install dependencies
+      import_tasks: tasks/install-dependencies.yml
+
+    - name: Build and publish Docker image
+      import_tasks: tasks/build-and-publish-docker-image.yml
+      vars:
+        publish: true

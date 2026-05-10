@@ -1,0 +1,28 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.idea
+.eslintcache
+
+.github
+.git
+
+playbooks
+!playbooks/docker/prod/default.conf
+
+scripts
+!scripts/env-vars.mjs
+
+.react-router

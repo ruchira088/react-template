@@ -1,0 +1,57 @@
+- name: Fetch git information
+  import_tasks: tasks/git-info.yml
+
+- name: Download npm dependencies
+  shell: |
+    cd ../ && npm ci
+
+- name: Build Docker image
+  when: not publish
+  block:
+    - name: Build development Docker image
+      block:
+        - name: Generate ENV file
+          shell: cd ../ && npm run env-vars
+
+        - name: Build Docker image
+          shell: |
+            docker build \
+              -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }} \
+              -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }}-{{ git_commit }} \
+              -f docker/Dockerfile \
+              ../
+
+- name: Build and publish Docker image
+  when: publish
+  block:
+      - name: Login to GitHub container registry
+        command: docker login ghcr.io -u USERNAME -p {{ access_token }}
+        vars:
+          access_token: "{{ lookup('aws_ssm', '/github/packages/read-write-token', region='__AWS_REGION__') }}"
+
+      - name: Publish development Docker image
+        block:
+          - name: Generate ENV file
+            shell: cd ../ && npm run env-vars
+
+          - name: Publish Docker image
+            shell: |
+              docker buildx build \
+                --push \
+                --platform linux/arm64,linux/amd64 \
+                -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }} \
+                -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }}-{{ git_commit }} \
+                -f docker/Dockerfile \
+                ../
+
+- name: Clean up
+  block:
+    - name: Clean up production bundle
+      file:
+        path: ../build
+        state: absent
+
+    - name: Clean up env file
+      file:
+        path: ../.env
+        state: absent
