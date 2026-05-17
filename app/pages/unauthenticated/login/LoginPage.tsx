@@ -1,6 +1,8 @@
 import React, { type ChangeEvent, useState } from "react"
-import { Box, Button, Stack, TextField, Typography } from "@mui/material"
 import { Link, useNavigate, useSearchParams } from "react-router"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { Label } from "~/components/ui/label"
 import { Option } from "~/types/Option"
 import { login, REDIRECT_QUERY_PARAMETER } from "~/services/authentication/AuthenticationService"
 import smallLogo from "~/images/small-logo.svg"
@@ -39,40 +41,47 @@ const LoginPage = () => {
   }
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "2rem" }}>
-      <Box component="form" onSubmit={onSubmit} sx={{ width: "100%", maxWidth: 400 }}>
-        <Stack spacing={3}>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-            <img src={smallLogo} alt="__PROJECT_TITLE__" style={{ width: 56, height: 56 }} />
-            <Typography variant="h5" component="h1">__PROJECT_TITLE__</Typography>
-            <Typography variant="body2" color="text.secondary">Sign in to your account</Typography>
-          </Box>
-          <TextField
-            label="Email"
+    <div className="flex min-h-screen items-center justify-center p-8">
+      <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-6">
+        <div className="flex flex-col items-center gap-2">
+          <img src={smallLogo} alt="__PROJECT_TITLE__" className="h-14 w-14" />
+          <h1 className="text-xl font-semibold">__PROJECT_TITLE__</h1>
+          <p className="text-sm text-muted-foreground">Sign in to your account</p>
+        </div>
+        {import.meta.env.VITE_MOCK_API === "true" && (
+          <div className="rounded-md border border-dashed bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
+            Mock API enabled — any email and password will sign you in.
+          </div>
+        )}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
             type="email"
             value={email}
             onChange={(event: ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
-            fullWidth
             autoComplete="email"
           />
-          <TextField
-            label="Password"
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
             type="password"
             value={password}
             onChange={(event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
-            fullWidth
             autoComplete="current-password"
           />
-          {error && <Typography color="error" variant="body2">{error}</Typography>}
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in…" : "Sign in"}
-          </Button>
-          <Typography variant="body2" sx={{ textAlign: "center" }}>
-            Don't have an account? <Link to="/sign-up">Sign up</Link>
-          </Typography>
-        </Stack>
-      </Box>
-    </Box>
+        </div>
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Signing in…" : "Sign in"}
+        </Button>
+        <p className="text-center text-sm">
+          Don't have an account? <Link to="/sign-up" className="underline">Sign up</Link>
+        </p>
+      </form>
+    </div>
   )
 }
 

@@ -1,4 +1,4 @@
-name: __PROJECT_NAME__ pipeline
+name: ${{ github.event.repository.name }} pipeline
 
 on:
   push:
@@ -8,6 +8,18 @@ on:
 concurrency:
   group: pipeline-${{ github.ref }}
   cancel-in-progress: false
+
+env:
+  PROJECT_NAME: ${{ vars.PROJECT_NAME || 'react-template' }}
+  PROJECT_TITLE: ${{ vars.PROJECT_TITLE || 'React Template' }}
+  PROJECT_DESCRIPTION: ${{ vars.PROJECT_DESCRIPTION || 'React Template — built from the react-template' }}
+  SUBDOMAIN: ${{ vars.SUBDOMAIN || 'react-template' }}
+  API_HOSTNAME_PROD: ${{ vars.API_HOSTNAME_PROD || 'api.react-template.ruchij.com' }}
+  API_HOSTNAME_STAGING: ${{ vars.API_HOSTNAME_STAGING || 'api.staging.react-template.ruchij.com' }}
+  STACK_NAME: ${{ vars.STACK_NAME || 'ReactTemplateFrontEndStack' }}
+  GHCR_NAMESPACE: ${{ vars.GHCR_NAMESPACE || 'ruchira088' }}
+  AWS_ACCOUNT: ${{ vars.AWS_ACCOUNT || '365562660444' }}
+  AWS_REGION: ${{ vars.AWS_REGION || 'ap-southeast-2' }}
 
 jobs:
   transpile-and-test:
@@ -21,6 +33,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Initialize project
+        run: |
+          node scripts/init-project.mjs <<EOF
+          ${{ env.PROJECT_NAME }}
+          ${{ env.PROJECT_TITLE }}
+          ${{ env.PROJECT_DESCRIPTION }}
+          ${{ env.SUBDOMAIN }}
+          ${{ env.API_HOSTNAME_PROD }}
+          ${{ env.API_HOSTNAME_STAGING }}
+          ${{ env.STACK_NAME }}
+          ${{ env.GHCR_NAMESPACE }}
+          ${{ env.AWS_ACCOUNT }}
+          ${{ env.AWS_REGION }}
+          EOF
 
       - name: Set up NodeJS
         uses: actions/setup-node@v6
@@ -84,6 +111,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Initialize project
+        run: |
+          node scripts/init-project.mjs <<EOF
+          ${{ env.PROJECT_NAME }}
+          ${{ env.PROJECT_TITLE }}
+          ${{ env.PROJECT_DESCRIPTION }}
+          ${{ env.SUBDOMAIN }}
+          ${{ env.API_HOSTNAME_PROD }}
+          ${{ env.API_HOSTNAME_STAGING }}
+          ${{ env.STACK_NAME }}
+          ${{ env.GHCR_NAMESPACE }}
+          ${{ env.AWS_ACCOUNT }}
+          ${{ env.AWS_REGION }}
+          EOF
+
       - name: Set up NodeJS
         uses: actions/setup-node@v6
         with:
@@ -93,9 +135,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: __AWS_REGION__
-          role-session-name: __PROJECT_NAME__-s3-publish
-          role-to-assume: "arn:aws:iam::__AWS_ACCOUNT__:role/github_iam_role"
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: ${{ env.PROJECT_NAME }}-s3-publish
+          role-to-assume: "arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github_iam_role"
 
       - name: Upload bundle to S3
         run: ansible-playbook playbooks/s3-upload.yml
@@ -114,6 +156,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Initialize project
+        run: |
+          node scripts/init-project.mjs <<EOF
+          ${{ env.PROJECT_NAME }}
+          ${{ env.PROJECT_TITLE }}
+          ${{ env.PROJECT_DESCRIPTION }}
+          ${{ env.SUBDOMAIN }}
+          ${{ env.API_HOSTNAME_PROD }}
+          ${{ env.API_HOSTNAME_STAGING }}
+          ${{ env.STACK_NAME }}
+          ${{ env.GHCR_NAMESPACE }}
+          ${{ env.AWS_ACCOUNT }}
+          ${{ env.AWS_REGION }}
+          EOF
+
       - name: Set up NodeJS
         uses: actions/setup-node@v6
         with:
@@ -129,9 +186,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: __AWS_REGION__
-          role-session-name: __PROJECT_NAME__-docker-publish
-          role-to-assume: "arn:aws:iam::__AWS_ACCOUNT__:role/github_iam_role"
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: ${{ env.PROJECT_NAME }}-docker-publish
+          role-to-assume: "arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github_iam_role"
 
       - name: Build and Publish Docker image
         run: ansible-playbook playbooks/build-and-publish-docker-image.yml
@@ -152,12 +209,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Initialize project
+        run: |
+          node scripts/init-project.mjs <<EOF
+          ${{ env.PROJECT_NAME }}
+          ${{ env.PROJECT_TITLE }}
+          ${{ env.PROJECT_DESCRIPTION }}
+          ${{ env.SUBDOMAIN }}
+          ${{ env.API_HOSTNAME_PROD }}
+          ${{ env.API_HOSTNAME_STAGING }}
+          ${{ env.STACK_NAME }}
+          ${{ env.GHCR_NAMESPACE }}
+          ${{ env.AWS_ACCOUNT }}
+          ${{ env.AWS_REGION }}
+          EOF
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: __AWS_REGION__
-          role-session-name: __PROJECT_NAME__-dev-deploy
-          role-to-assume: "arn:aws:iam::__AWS_ACCOUNT__:role/github_iam_role"
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: ${{ env.PROJECT_NAME }}-dev-deploy
+          role-to-assume: "arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github_iam_role"
 
       - name: Install deploy dependencies
         run: npm ci
@@ -185,12 +257,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Initialize project
+        run: |
+          node scripts/init-project.mjs <<EOF
+          ${{ env.PROJECT_NAME }}
+          ${{ env.PROJECT_TITLE }}
+          ${{ env.PROJECT_DESCRIPTION }}
+          ${{ env.SUBDOMAIN }}
+          ${{ env.API_HOSTNAME_PROD }}
+          ${{ env.API_HOSTNAME_STAGING }}
+          ${{ env.STACK_NAME }}
+          ${{ env.GHCR_NAMESPACE }}
+          ${{ env.AWS_ACCOUNT }}
+          ${{ env.AWS_REGION }}
+          EOF
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: __AWS_REGION__
-          role-session-name: __PROJECT_NAME__-staging-deploy
-          role-to-assume: "arn:aws:iam::__AWS_ACCOUNT__:role/github_iam_role"
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: ${{ env.PROJECT_NAME }}-staging-deploy
+          role-to-assume: "arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github_iam_role"
 
       - name: Install deploy dependencies
         run: npm ci
@@ -218,12 +305,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Initialize project
+        run: |
+          node scripts/init-project.mjs <<EOF
+          ${{ env.PROJECT_NAME }}
+          ${{ env.PROJECT_TITLE }}
+          ${{ env.PROJECT_DESCRIPTION }}
+          ${{ env.SUBDOMAIN }}
+          ${{ env.API_HOSTNAME_PROD }}
+          ${{ env.API_HOSTNAME_STAGING }}
+          ${{ env.STACK_NAME }}
+          ${{ env.GHCR_NAMESPACE }}
+          ${{ env.AWS_ACCOUNT }}
+          ${{ env.AWS_REGION }}
+          EOF
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: __AWS_REGION__
-          role-session-name: __PROJECT_NAME__-production-deploy
-          role-to-assume: "arn:aws:iam::__AWS_ACCOUNT__:role/github_iam_role"
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: ${{ env.PROJECT_NAME }}-production-deploy
+          role-to-assume: "arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github_iam_role"
 
       - name: Install deploy dependencies
         run: npm ci

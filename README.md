@@ -1,6 +1,6 @@
 # react-template
 
-Personal starting point for new React SPAs hosted under `ruchij.com`. Mirrors the structure of `video-downloader-front-end`: React Router 7 (SPA, no SSR), Vite, Vitest, MUI, SCSS, Sentry, Axios + Zod, auth/unauth layout split, Ansible playbooks for build artefacts and Docker, multi-stage GitHub Actions pipeline, and CDK deployment via the `react-app-cdk-deploy` library.
+Personal starting point for new React SPAs hosted under `ruchij.com`. Mirrors the structure of `video-downloader-front-end`: React Router 7 (SPA, no SSR), Vite, Vitest, Tailwind CSS v4 + shadcn/ui, Sentry, Axios + Zod, auth/unauth layout split, Ansible playbooks for build artefacts and Docker, multi-stage GitHub Actions pipeline, and CDK deployment via the `react-app-cdk-deploy` library.
 
 ## Creating a new project from this template
 
@@ -39,19 +39,45 @@ The init script asks for:
 ## Manual follow-ups (init script can't do these)
 
 - **Sentry**: create three projects in Sentry (dev / staging / prod), copy the DSNs into `app/services/Sentry.ts`. Empty strings disable Sentry per environment.
-- **Logo & favicon**: replace `app/images/small-logo.svg` and `public/favicon.ico`.
+- **Logo, loader & favicon**: replace `app/images/small-logo.svg`, `app/images/loading.svg`, and `public/favicon.ico` (all three ship as generic slate placeholders).
 - **AWS IAM trust policy**: the `arn:aws:iam::<account>:role/github_iam_role` must trust this new repo's GitHub Actions OIDC subject. Update the role's trust policy to include the new repo path.
 - **GitHub environments**: in the new repo's settings, create `Staging` and `Production` environments to gate the deploy jobs (matches the workflow's `environment:` keys).
 - **Hosted zone**: `cdk-deploy/cdk.context.json` is intentionally omitted; the first `cdk synth` will populate it with the Route53 lookup for `ruchij.com`.
+
+## Running CI without committing init values
+
+The build pipeline re-runs `scripts/init-project.mjs` at the start of every job, feeding it values from GitHub Actions repository variables. This means the source tree can stay templated (`__PROJECT_NAME__`, `__AWS_REGION__`, …) while CI still produces correct artefacts.
+
+Configure these under **Settings → Secrets and variables → Actions → Variables**. Each has a hardcoded fallback in the workflow's `env:` block, so the pipeline runs end-to-end on a fresh fork even without any variables set — the fallbacks describe the template's own deployment, so you'll want to override them for a real project.
+
+| Variable | Maps to token | Hardcoded fallback |
+| --- | --- | --- |
+| `PROJECT_NAME` | `__PROJECT_NAME__` | `react-template` |
+| `PROJECT_TITLE` | `__PROJECT_TITLE__` | `React Template` |
+| `PROJECT_DESCRIPTION` | `__PROJECT_DESCRIPTION__` | `React Template — built from the react-template` |
+| `SUBDOMAIN` | `__SUBDOMAIN__` | `react-template` |
+| `API_HOSTNAME_PROD` | `__API_HOSTNAME_PROD__` | `api.react-template.ruchij.com` |
+| `API_HOSTNAME_STAGING` | `__API_HOSTNAME_STAGING__` | `api.staging.react-template.ruchij.com` |
+| `STACK_NAME` | `__STACK_NAME__` | `ReactTemplateFrontEndStack` |
+| `GHCR_NAMESPACE` | `__GHCR_NAMESPACE__` | `ruchira088` |
+| `AWS_ACCOUNT` | `__AWS_ACCOUNT__` | `365562660444` |
+| `AWS_REGION` | `__AWS_REGION__` | `ap-southeast-2` |
+
+If you'd rather bake these into the source tree once and remove the CI-time init step, run `node scripts/init-project.mjs` locally as described above and delete the `Initialize project` step from each job (and the workflow-level `env:` block) in `.github/workflows/build-pipeline.yml`.
 
 ## Project layout
 
 ```
 .github/workflows/build-pipeline.yml   transpile/test -> S3 upload -> docker -> cdk deploy -> release
 app/
+  app.css                              Tailwind v4 entrypoint + shadcn CSS variables (light/dark)
+  index.scss                           HydrateFallback loading-screen styles only
+  components/ui/                       shadcn primitives (Button, Input, Label)
+  components/ThemeToggle.tsx           sun/moon toggle wired to the config provider
+  lib/utils.ts                         `cn` helper (clsx + tailwind-merge)
   pages/authenticated/                 layout that requires a token; HomePage stub
   pages/unauthenticated/               login (working) + signup (stub) under a public layout
-  providers/                           ApplicationConfigurationProvider (theme + safe-mode context)
+  providers/                           ApplicationConfigurationProvider (theme + safe-mode context, toggles `.dark` on `<html>`)
   services/
     Config.ts                          environment detection by hostname
     ApiConfiguration.ts                base API URL inference + VITE_API_URL override
@@ -71,13 +97,26 @@ scripts/
 tests/                                 mirrors app/; vitest + jsdom + testing-library
 ```
 
+## Mock API for local dev
+
+`npm run start:dev` boots the app with `VITE_MOCK_API=true`, which swaps in `app/services/http/MockApi.ts` as the axios adapter. The three `/authentication/*` endpoints used by `AuthenticationService` are served from memory so you can sign in with any non-empty email and password — no backend required. The login page shows a small banner when the mock is active. All other API calls 404 through the adapter so missing handlers are obvious.
+
+To point at a real backend instead, use `start`, `start:local`, or `start:staging` (none of those set `VITE_MOCK_API`), or remove the env var from `start:dev` in `package.json`.
+
+## Styling & UI
+
+- **Tailwind v4** is wired via `@tailwindcss/vite` in `vite.config.ts`. There is no `tailwind.config.*` — design tokens live as CSS variables in `app/app.css` under `:root` and `.dark`.
+- **shadcn/ui** components are owned source, not a dependency. Add more with `npx shadcn@latest add <component>`; `components.json` is already set up (`~/components/ui`, `~/lib/utils`, neutral base color).
+- **Dark mode** is class-based (`.dark` on `<html>`). The toggle in `AuthenticatedLayout`'s header writes through `useApplicationConfiguration().setTheme`, which persists to localStorage and applies the class.
+- **Icons** are from `lucide-react`.
+
 ## Common scripts
 
 ```bash
 npm run start          # dev server pointing at PROD API
 npm run start:local    # dev server pointing at https://api.localhost
 npm run start:staging  # dev server pointing at staging API
-npm run start:dev      # dev server, no API URL override (uses inference)
+npm run start:dev      # dev server with mock API (VITE_MOCK_API=true)
 npm run typecheck
 npm run lint
 npm run test           # vitest watch

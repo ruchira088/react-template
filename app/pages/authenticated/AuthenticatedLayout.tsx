@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate } from "react-router"
 import React, { useEffect } from "react"
-import { Box, Typography, Button } from "@mui/material"
+import { Button } from "~/components/ui/button"
+import { ThemeToggle } from "~/components/ThemeToggle"
 import type { AuthenticationToken } from "~/models/AuthenticationToken"
 import {
   getAuthenticatedUser,
@@ -42,31 +43,24 @@ const AuthenticatedLayout = () => {
 
   return (
     <>
-      <Box
-        component="header"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0.75rem 1.5rem",
-          borderBottom: "1px solid",
-          borderColor: "divider"
-        }}
-      >
-        <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", gap: "0.5rem" }}>
-          <img src={smallLogo} alt="__PROJECT_TITLE__" style={{ width: 32, height: 32 }} />
-          <Typography variant="h6" component="span">__PROJECT_TITLE__</Typography>
+      <header className="flex items-center justify-between border-b px-6 py-3">
+        <Link to="/" className="flex items-center gap-2 no-underline">
+          <img src={smallLogo} alt="__PROJECT_TITLE__" className="h-8 w-8" />
+          <span className="text-lg font-semibold">__PROJECT_TITLE__</span>
         </Link>
-        <Button
-          variant="text"
-          onClick={() => {
-            removeAuthenticationToken()
-            navigate("/sign-in")
-          }}
-        >
-          Sign out
-        </Button>
-      </Box>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            onClick={() => {
+              removeAuthenticationToken()
+              navigate("/sign-in")
+            }}
+          >
+            Sign out
+          </Button>
+        </div>
+      </header>
       <Outlet />
     </>
   )
