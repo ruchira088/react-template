@@ -36,7 +36,7 @@
         body_format: json
         status_code: 201
         headers:
-          Authorization: Bearer {{ lookup('aws_ssm', '/github/token', region='__AWS_REGION__') }}
+          Authorization: Bearer {{ lookup('aws_ssm', '/github/token', region='ap-southeast-2') }}
           Accept: application/vnd.github+json
           X-GitHub-Api-Version: 2022-11-28
         body:

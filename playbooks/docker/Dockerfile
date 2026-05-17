@@ -1,6 +1,6 @@
 FROM node:lts-slim
 
-LABEL org.opencontainers.image.source=https://github.com/__GHCR_NAMESPACE__/__PROJECT_NAME__
+LABEL org.opencontainers.image.source=https://github.com/ruchira088/react-template
 
 WORKDIR /opt/front-end
 

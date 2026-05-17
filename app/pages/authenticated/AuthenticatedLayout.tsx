@@ -45,8 +45,8 @@ const AuthenticatedLayout = () => {
     <>
       <header className="flex items-center justify-between border-b px-6 py-3">
         <Link to="/" className="flex items-center gap-2 no-underline">
-          <img src={smallLogo} alt="__PROJECT_TITLE__" className="h-8 w-8" />
-          <span className="text-lg font-semibold">__PROJECT_TITLE__</span>
+          <img src={smallLogo} alt="React Template" className="h-8 w-8" />
+          <span className="text-lg font-semibold">React Template</span>
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />

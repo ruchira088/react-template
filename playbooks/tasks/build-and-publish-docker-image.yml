@@ -16,8 +16,8 @@
         - name: Build Docker image
           shell: |
             docker build \
-              -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }} \
-              -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }}-{{ git_commit }} \
+              -t ghcr.io/ruchira088/react-template-dev:{{ git_branch }} \
+              -t ghcr.io/ruchira088/react-template-dev:{{ git_branch }}-{{ git_commit }} \
               -f docker/Dockerfile \
               ../
 
@@ -27,7 +27,7 @@
       - name: Login to GitHub container registry
         command: docker login ghcr.io -u USERNAME -p {{ access_token }}
         vars:
-          access_token: "{{ lookup('aws_ssm', '/github/packages/read-write-token', region='__AWS_REGION__') }}"
+          access_token: "{{ lookup('aws_ssm', '/github/packages/read-write-token', region='ap-southeast-2') }}"
 
       - name: Publish development Docker image
         block:
@@ -39,8 +39,8 @@
               docker buildx build \
                 --push \
                 --platform linux/arm64,linux/amd64 \
-                -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }} \
-                -t ghcr.io/__GHCR_NAMESPACE__/__PROJECT_NAME__-dev:{{ git_branch }}-{{ git_commit }} \
+                -t ghcr.io/ruchira088/react-template-dev:{{ git_branch }} \
+                -t ghcr.io/ruchira088/react-template-dev:{{ git_branch }}-{{ git_commit }} \
                 -f docker/Dockerfile \
                 ../
 

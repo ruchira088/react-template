@@ -7,8 +7,8 @@ export enum Environment {
 }
 
 const URL_MAPPINGS: Record<Environment.Staging | Environment.Production, string[]> = {
-  [Environment.Staging]: ["staging.__SUBDOMAIN__.ruchij.com"],
-  [Environment.Production]: ["__SUBDOMAIN__.ruchij.com"]
+  [Environment.Staging]: ["staging.react-template.ruchij.com"],
+  [Environment.Production]: ["react-template.ruchij.com"]
 }
 
 export const getEnvironment = (): Environment => {

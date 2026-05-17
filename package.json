@@ -1,5 +1,5 @@
 {
-  "name": "__PROJECT_NAME__",
+  "name": "react-template",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -54,15 +54,15 @@
     "zod": "^4.0.5"
   },
   "scripts": {
-    "build": "npm run env-vars && react-router build",
+    "build": "npm run env-vars && VITE_MOCK_API=true react-router build",
     "ci:checks": "npm run typecheck && npm run lint && npm run test:coverage",
     "env-vars": "node scripts/env-vars.mjs",
     "lint": "eslint app tests --ext .ts,.tsx",
     "lint:fix": "eslint app tests --ext .ts,.tsx --fix",
-    "start": "npm run env-vars && VITE_API_URL=https://__API_HOSTNAME_PROD__ react-router dev --host 0.0.0.0",
-    "start:dev": "npm run env-vars && VITE_MOCK_API=true react-router dev --host 0.0.0.0",
+    "start": "npm run env-vars && VITE_MOCK_API=true react-router dev --host 0.0.0.0",
+    "start:dev": "npm run env-vars && VITE_API_URL=https://api.react-template.ruchij.com react-router dev --host 0.0.0.0",
     "start:local": "npm run env-vars && VITE_API_URL=https://api.localhost react-router dev",
-    "start:staging": "npm run env-vars && VITE_API_URL=https://__API_HOSTNAME_STAGING__ react-router dev --host 0.0.0.0",
+    "start:staging": "npm run env-vars && VITE_API_URL=https://api.staging.react-template.ruchij.com react-router dev --host 0.0.0.0",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:run": "vitest run",

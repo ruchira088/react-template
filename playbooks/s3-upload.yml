@@ -30,12 +30,12 @@
       block:
         - name: Create S3 bucket
           amazon.aws.s3_bucket:
-            name: __PROJECT_NAME__-bundles.ruchij.com
+            name: react-template-bundles.ruchij.com
             state: present
 
         - name: Upload production bundle to S3
           amazon.aws.s3_object:
-            bucket: __PROJECT_NAME__-bundles.ruchij.com
+            bucket: react-template-bundles.ruchij.com
             object: "{{ git_branch }}/{{ git_commit }}/client.zip"
             src: ../build/client.zip
             mode: put

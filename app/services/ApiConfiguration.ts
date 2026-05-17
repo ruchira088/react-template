@@ -3,8 +3,8 @@ import { Environment, getEnvironment } from "~/services/Config"
 const API_URL_QUERY_PARAMETER = "API_URL"
 
 const API_URL_MAPPINGS: Record<Environment.Staging | Environment.Production, string> = {
-  [Environment.Staging]: "__API_HOSTNAME_STAGING__",
-  [Environment.Production]: "__API_HOSTNAME_PROD__"
+  [Environment.Staging]: "api.staging.react-template.ruchij.com",
+  [Environment.Production]: "api.react-template.ruchij.com"
 }
 
 const inferBaseApiUrl = (): string => {

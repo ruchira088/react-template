@@ -10,8 +10,8 @@ import { initSentry } from "~/services/Sentry"
 
 export function meta(_args: Route.MetaArgs) {
   return [
-    {title: "__PROJECT_TITLE__"},
-    {name: "description", content: "__PROJECT_DESCRIPTION__"},
+    {title: "React Template"},
+    {name: "description", content: "React Template"},
   ]
 }
 
@@ -63,10 +63,10 @@ export function HydrateFallback() {
     <div className="loading-screen">
       <div className="loading-content">
         <div className="loading-logo-container">
-          <img src={smallLogo} alt="__PROJECT_TITLE__" className="loading-logo" />
+          <img src={smallLogo} alt="React Template" className="loading-logo" />
           <div className="loading-ring"></div>
         </div>
-        <h1 className="loading-title">__PROJECT_TITLE__</h1>
+        <h1 className="loading-title">React Template</h1>
         <div className="loading-bar-container">
           <div className="loading-bar"></div>
         </div>

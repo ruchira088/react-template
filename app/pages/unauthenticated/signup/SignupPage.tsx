@@ -8,8 +8,8 @@ import smallLogo from "~/images/small-logo.svg"
 const SignupPage = () => (
   <div className="flex min-h-screen items-center justify-center p-8">
     <div className="flex w-full max-w-sm flex-col items-center gap-6">
-      <img src={smallLogo} alt="__PROJECT_TITLE__" className="h-14 w-14" />
-      <h1 className="text-xl font-semibold">__PROJECT_TITLE__</h1>
+      <img src={smallLogo} alt="React Template" className="h-14 w-14" />
+      <h1 className="text-xl font-semibold">React Template</h1>
       <p className="text-center text-muted-foreground">
         Sign up isn't wired up yet — implement it once your backend has a
         user-creation endpoint.

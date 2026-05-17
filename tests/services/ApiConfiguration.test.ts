@@ -63,14 +63,14 @@ describe("ApiConfiguration", () => {
 
     test("should use API_URL_MAPPINGS for known hosts", async () => {
       // Mock window.location with a known host
-      const mockUrl = new URL("https://staging.__SUBDOMAIN__.ruchij.com")
+      const mockUrl = new URL("https://staging.react-template.ruchij.com")
 
       vi.stubGlobal("window", {
         location: {
           href: mockUrl.href,
           search: "",
           protocol: "https:",
-          host: "staging.__SUBDOMAIN__.ruchij.com",
+          host: "staging.react-template.ruchij.com",
         },
         history: { replaceState: vi.fn() },
       })
@@ -78,18 +78,18 @@ describe("ApiConfiguration", () => {
       vi.resetModules()
       const { apiConfiguration } = await import("~/services/ApiConfiguration")
 
-      expect(apiConfiguration.baseUrl).toBe("https://__API_HOSTNAME_STAGING__")
+      expect(apiConfiguration.baseUrl).toBe("https://api.staging.react-template.ruchij.com")
     })
 
-    test("should use API_URL_MAPPINGS for __SUBDOMAIN__.ruchij.com", async () => {
-      const mockUrl = new URL("https://__SUBDOMAIN__.ruchij.com")
+    test("should use API_URL_MAPPINGS for react-template.ruchij.com", async () => {
+      const mockUrl = new URL("https://react-template.ruchij.com")
 
       vi.stubGlobal("window", {
         location: {
           href: mockUrl.href,
           search: "",
           protocol: "https:",
-          host: "__SUBDOMAIN__.ruchij.com",
+          host: "react-template.ruchij.com",
         },
         history: { replaceState: vi.fn() },
       })
@@ -97,7 +97,7 @@ describe("ApiConfiguration", () => {
       vi.resetModules()
       const { apiConfiguration } = await import("~/services/ApiConfiguration")
 
-      expect(apiConfiguration.baseUrl).toBe("https://__API_HOSTNAME_PROD__")
+      expect(apiConfiguration.baseUrl).toBe("https://api.react-template.ruchij.com")
     })
 
     test("should fallback to api.{host} for unknown hosts", async () => {

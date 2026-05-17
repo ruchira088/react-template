@@ -44,8 +44,8 @@ const LoginPage = () => {
     <div className="flex min-h-screen items-center justify-center p-8">
       <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-6">
         <div className="flex flex-col items-center gap-2">
-          <img src={smallLogo} alt="__PROJECT_TITLE__" className="h-14 w-14" />
-          <h1 className="text-xl font-semibold">__PROJECT_TITLE__</h1>
+          <img src={smallLogo} alt="React Template" className="h-14 w-14" />
+          <h1 className="text-xl font-semibold">React Template</h1>
           <p className="text-sm text-muted-foreground">Sign in to your account</p>
         </div>
         {import.meta.env.VITE_MOCK_API === "true" && (
