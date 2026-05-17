@@ -1,6 +1,7 @@
 import { describe, expect, test, vi, beforeEach } from "vitest"
 import { render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router"
+import { DateTime } from "luxon"
 
 import { None, Some } from "~/types/Option"
 
@@ -17,8 +18,8 @@ import {
 
 const mockToken = {
   secret: "test",
-  issuedAt: new Date("2026-01-01T00:00:00Z"),
-  expiresAt: new Date("2026-12-31T00:00:00Z"),
+  issuedAt: DateTime.fromISO("2026-01-01T00:00:00Z"),
+  expiresAt: DateTime.fromISO("2026-12-31T00:00:00Z"),
   renewals: 0,
 }
 
