@@ -60,7 +60,9 @@ describe("ApplicationConfigurationProvider", () => {
 
     await waitFor(() => expect(screen.getByTestId("theme")).toHaveTextContent(Theme.Light))
     expect(screen.getByTestId("safe-mode")).toHaveTextContent("false")
-    expect(document.body.getAttribute("data-theme")).toBe(Theme.Light)
+    // The data-theme attribute is applied by a passive effect that can flush
+    // after the render that shows the theme text, so it must also be awaited.
+    await waitFor(() => expect(document.body.getAttribute("data-theme")).toBe(Theme.Light))
     expect(document.documentElement.classList.contains("dark")).toBe(false)
     expect(getDefaultApplicationConfiguration).toHaveBeenCalledOnce()
   })
@@ -76,8 +78,8 @@ describe("ApplicationConfigurationProvider", () => {
 
     await waitFor(() => expect(screen.getByTestId("theme")).toHaveTextContent(Theme.Dark))
     expect(screen.getByTestId("safe-mode")).toHaveTextContent("true")
+    await waitFor(() => expect(document.body.getAttribute("data-theme")).toBe(Theme.Dark))
     expect(document.documentElement.classList.contains("dark")).toBe(true)
-    expect(document.body.getAttribute("data-theme")).toBe(Theme.Dark)
     expect(getDefaultApplicationConfiguration).not.toHaveBeenCalled()
   })
 
@@ -97,7 +99,7 @@ describe("ApplicationConfigurationProvider", () => {
     await user.click(screen.getByRole("button", { name: "force-light" }))
 
     await waitFor(() => expect(screen.getByTestId("theme")).toHaveTextContent(Theme.Light))
-    expect(document.documentElement.classList.contains("dark")).toBe(false)
+    await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(false))
     expect(setApplicationConfiguration).toHaveBeenLastCalledWith({ theme: Theme.Light, safeMode: false })
   })
 
@@ -116,7 +118,7 @@ describe("ApplicationConfigurationProvider", () => {
     await user.click(screen.getByRole("button", { name: "enable-safe" }))
 
     await waitFor(() => expect(screen.getByTestId("safe-mode")).toHaveTextContent("true"))
-    expect(setApplicationConfiguration).toHaveBeenLastCalledWith({ theme: Theme.Light, safeMode: true })
+    await waitFor(() => expect(setApplicationConfiguration).toHaveBeenLastCalledWith({ theme: Theme.Light, safeMode: true }))
   })
 
   test("useApplicationConfiguration throws when the context has no value", () => {
