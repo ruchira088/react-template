@@ -1,6 +1,6 @@
 {
   "name": "react-template",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -59,6 +59,7 @@
     "env-vars": "node scripts/env-vars.mjs",
     "lint": "eslint app tests --ext .ts,.tsx",
     "lint:fix": "eslint app tests --ext .ts,.tsx --fix",
+    "prepare": "git config core.hooksPath .githooks",
     "start": "npm run env-vars && VITE_MOCK_API=true react-router dev --host 0.0.0.0",
     "start:dev": "npm run env-vars && VITE_API_URL=https://api.react-template.ruchij.com react-router dev --host 0.0.0.0",
     "start:local": "npm run env-vars && VITE_API_URL=https://api.localhost react-router dev",

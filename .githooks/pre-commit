@@ -1,0 +1,17 @@
+#!/bin/sh
+# Auto-bump the patch version in package.json and package-lock.json on every commit.
+#
+# If the staged diff already changes the "version" field (a manual bump, e.g. a
+# minor/major release), do nothing so the manual change is never overridden.
+#
+# Known caveats:
+#   - `git commit --amend` re-runs this hook, so amending bumps the version again.
+#   - Merge, rebase, and cherry-pick commits, and `git commit --no-verify`, skip
+#     this hook, so those commits do not bump the version.
+
+if git diff --cached -- package.json | grep -q '^[+-].*"version"'; then
+  exit 0
+fi
+
+npm version patch --no-git-tag-version
+git add package.json package-lock.json
