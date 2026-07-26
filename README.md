@@ -1,6 +1,6 @@
 # react-template
 
-Personal starting point for new React SPAs hosted under `ruchij.com`. Mirrors the structure of `video-downloader-front-end`: React Router 7 (SPA, no SSR), Vite, Vitest, Tailwind CSS v4 + shadcn/ui, Sentry, Axios + Zod, auth/unauth layout split, Ansible playbooks for build artefacts and Docker, multi-stage GitHub Actions pipeline, and CDK deployment via the `react-app-cdk-deploy` library.
+Personal starting point for new React SPAs hosted under `ruchij.com`. Mirrors the structure of `video-downloader-front-end`: React Router 8 (SPA, no SSR), Vite 8, Vitest, TypeScript 7, oxlint, Tailwind CSS v4 + shadcn/ui, Sentry, Axios + Zod, auth/unauth layout split, Ansible playbooks for build artefacts and Docker, multi-stage GitHub Actions pipeline, and CDK deployment via the `react-app-cdk-deploy` library.
 
 ## Using this template
 
@@ -81,6 +81,14 @@ This is on by default so the template is demo-able with no extra setup. Once you
 - **Dark mode** is class-based (`.dark` on `<html>`). The toggle in `AuthenticatedLayout`'s header writes through `useApplicationConfiguration().setTheme`, which persists to localStorage and applies the class.
 - **Icons** are from `lucide-react`.
 
+## Toolchain notes
+
+Worth knowing before you add tooling to a project stamped from this template.
+
+- **TypeScript 7** is the native (Go) compiler. `tsc` is a native binary, and the `typescript` package no longer exposes the classic compiler API (`createProgram`, `SyntaxKind`, …) — that now lives behind a separate `typescript/unstable/*` surface. Tools built against the old API therefore **fail outright** on TS 7 rather than degrading. If you hit one, Microsoft documents a side-by-side install (`@typescript/typescript6`, exposed as `tsc6`) as the escape hatch.
+- **Linting is [oxlint](https://oxc.rs)**, configured in `.oxlintrc.json`. It's Rust-based and doesn't use the TypeScript compiler API, which is exactly why it works with TS 7. `typescript-eslint` is not an option here — every published version caps TypeScript at `<6.1.0` and errors on TS 7 ([tracking issue](https://github.com/typescript-eslint/typescript-eslint/issues/10940)) — so the ESLint stack isn't installed. There are no type-aware lint rules; `tsc` is the source of truth for types.
+- **The `~/*` → `app/*` alias** is declared in `tsconfig.json` and resolved by Vite natively (`resolve: { tsconfigPaths: true }`), set in both `vite.config.ts` and `vitest.config.ts`. No `vite-tsconfig-paths` plugin — a new Vite-based config needs that `resolve` block or `~/` imports won't resolve.
+
 ## Common scripts
 
 ```bash
@@ -88,8 +96,9 @@ npm run start          # dev server with mock API (VITE_MOCK_API=true)
 npm run start:dev      # dev server pointing at PROD API
 npm run start:local    # dev server pointing at https://api.localhost
 npm run start:staging  # dev server pointing at staging API
-npm run typecheck
-npm run lint
+npm run typecheck      # react-router typegen + tsc (TypeScript 7)
+npm run lint           # oxlint over app/ and tests/
+npm run lint:fix       # oxlint --fix
 npm run test           # vitest watch
 npm run test:coverage
 npm run build          # react-router build (also ships VITE_MOCK_API=true)

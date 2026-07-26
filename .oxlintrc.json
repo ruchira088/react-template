@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "es2024": true
+  },
+  "rules": {
+    "typescript/explicit-module-boundary-types": "off",
+    "typescript/no-empty-object-type": "off",
+    "typescript/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "typescript/prefer-as-const": "warn",
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "no-empty-pattern": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["tests/**/*.ts", "tests/**/*.tsx"],
+      "rules": {
+        "typescript/no-explicit-any": "off",
+        "typescript/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
+      }
+    }
+  ],
+  "ignorePatterns": ["node_modules/**", "build/**", "cdk-deploy/**", ".react-router/**"]
+}
