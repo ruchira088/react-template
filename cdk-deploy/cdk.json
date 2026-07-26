@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/cdk-deploy.ts",
+  "app": "npx tsx bin/cdk-deploy.ts",
   "watch": {
     "include": [
       "**"

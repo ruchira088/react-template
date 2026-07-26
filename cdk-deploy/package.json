@@ -11,12 +11,17 @@
     "deploy": "npm run build && npm run cdk-deploy"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1",
-    "aws-cdk": "^2.1100.0",
-    "ts-node": "^10.9.2",
-    "typescript": "~6.0.3"
+    "@types/node": "^24.13.3",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
+    "aws-cdk": "^2.1133.0",
     "react-app-cdk-deploy": "github:ruchira088/react-app-cdk-deploy#v1"
+  },
+  "allowScripts": {
+    "github:ruchira088/react-app-cdk-deploy": true,
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.3": true
   }
 }
