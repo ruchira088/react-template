@@ -21,6 +21,18 @@ npx vitest run -t "test name"                                 # single test by n
 
 Every commit auto-bumps the patch version in `package.json` and `package-lock.json` via the checked-in `.githooks/pre-commit` hook (activated by the `prepare` script). A manually staged change to `"version"` suppresses the auto-bump.
 
+## Dependencies
+
+Node 24 (`engines.node: ^24.0.0`). The load-bearing versions: React 19.2, React Router 8.3 (`react-router` + `@react-router/dev`), Vite 8.1, Vitest 4.1 + jsdom 29, TypeScript 7.0, oxlint 1.75, Tailwind 4.3 (`tailwindcss` + `@tailwindcss/vite`), Zod 4.4, axios 1.18, Luxon 3.7, `@sentry/react` 10.68. Testing Library (`react` 16.3, `jest-dom` 7, `user-event` 14.6). `sass-embedded` compiles `app/index.scss`; `simple-git` powers `scripts/env-vars.mjs`. shadcn's runtime deps are `@radix-ui/react-label`, `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tw-animate-css`, `lucide-react`.
+
+`cdk-deploy/` has its own `package.json` (installed separately): `aws-cdk` 2.x, `react-app-cdk-deploy` from GitHub, and `tsx` — not `ts-node`, which needs the removed TS compiler API.
+
+The dependency list is kept minimal — every runtime dependency is imported by `app/` or required by the build. `@dnd-kit/*`, `classnames` and `@react-router/node` were removed as unused; `@react-router/node` is still resolvable transitively via `@react-router/dev`. Use `cn` from `~/lib/utils` rather than reintroducing `classnames`.
+
+`isbot` is the exception: no source file imports it, but **`react-router typegen` will silently rewrite `package.json` to re-add it** (as a bare `"isbot": "^5"`, appended out of sorted order) and run an install that prunes `devDependencies`, which leaves `node_modules` broken until the next `npm install`. Don't remove it. If it does get re-added, restore the pinned `^5.2.1` in sorted position and re-run `npm install`.
+
+**When you change a dependency — add, remove, or bump a version — update `README.md` in the same change.** Its `## Dependencies` section lists every package with its version range, and the intro paragraph and `## Toolchain notes` section name specific versions too. Grep `README.md` for the old version string before finishing.
+
 ## Toolchain constraints
 
 Two deliberate choices here are unusual enough to break assumptions. Read this before adding any TypeScript-aware tooling.
