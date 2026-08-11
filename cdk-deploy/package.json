@@ -12,11 +12,11 @@
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
-    "tsx": "^4.23.1",
+    "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "aws-cdk": "^2.1133.0",
+    "aws-cdk": "^2.1135.1",
     "react-app-cdk-deploy": "github:ruchira088/react-app-cdk-deploy#v1"
   },
   "allowScripts": {

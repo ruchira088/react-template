@@ -97,11 +97,11 @@ Requires Node **24** (`engines.node: ^24.0.0`). Versions are the ranges declared
 | `clsx`, `tailwind-merge` | `^2.1.1`, `^3.6.0` | the `cn` helper in `app/lib/utils.ts` |
 | `tailwindcss`, `@tailwindcss/vite` | `^4.3.3` | styling; no `tailwind.config.*` |
 | `tw-animate-css` | `^1.4.0` | imported at the top of `app/app.css` |
-| `lucide-react` | `^1.27.0` | icons |
-| `axios` | `^1.18.1` | `app/services/http/HttpClient.ts` |
+| `lucide-react` | `^1.31.0` | icons |
+| `axios` | `^1.19.0` | `app/services/http/HttpClient.ts` |
 | `zod` | `^4.4.3` | API schemas in `app/models/` |
 | `luxon` | `^3.7.2` | `DateTime` / `Duration` in `app/types/Zod.ts` and `app/utils/Formatter.ts` |
-| `@sentry/react` | `^10.68.0` | `app/services/Sentry.ts`, error capture in `app/root.tsx` |
+| `@sentry/react` | `^10.70.0` | `app/services/Sentry.ts`, error capture in `app/root.tsx` |
 
 Every runtime dependency above is either imported by `app/` or required by the build. `@dnd-kit/*`, `classnames` and `@react-router/node` were removed as unused — add `@dnd-kit` back if a project needs drag-and-drop, and reach for `cn` (`clsx` + `tailwind-merge`) rather than reinstalling `classnames`. `@react-router/node` is still installed transitively by `@react-router/dev`, so nothing needs it declared here.
 
@@ -110,18 +110,18 @@ Every runtime dependency above is either imported by `app/` or required by the b
 | Package | Version | Used for |
 | --- | --- | --- |
 | `@react-router/dev` | `^8.3.0` | dev server, typegen, `react-router build` |
-| `vite` | `^8.1.5` | bundler (`vite.config.ts`) |
+| `vite` | `^8.2.1` | bundler (`vite.config.ts`) |
 | `typescript` | `^7.0.2` | native (Go) `tsc` — see [Toolchain notes](#toolchain-notes) |
-| `oxlint` | `^1.75.0` | linting (`.oxlintrc.json`) |
-| `vitest`, `@vitest/coverage-v8`, `jsdom` | `^4.1.10`, `^4.1.10`, `^29.1.1` | tests + coverage in a DOM environment |
-| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.2`, `^7.0.0`, `^14.6.1` | component tests (`tests/setup.ts`) |
+| `oxlint` | `^1.78.0` | linting (`.oxlintrc.json`) |
+| `vitest`, `@vitest/coverage-v8`, `jsdom` | `^4.1.10`, `^4.1.10`, `^30.0.1` | tests + coverage in a DOM environment |
+| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.2`, `^7.0.1`, `^14.6.3` | component tests (`tests/setup.ts`) |
 | `sass-embedded` | `^1.100.0` | compiles `app/index.scss` |
 | `simple-git` | `^3.36.0` | `scripts/env-vars.mjs` reads branch/commit |
-| `@types/node`, `@types/react`, `@types/react-dom`, `@types/luxon` | `^24.12.2`, `^19.2.17`, `^19.2.3`, `^3.7.2` | type definitions |
+| `@types/node`, `@types/react`, `@types/react-dom`, `@types/luxon` | `^24.12.2`, `^19.2.18`, `^19.2.4`, `^3.7.4` | type definitions |
 
 ### `cdk-deploy/`
 
-Separate `package.json`, installed independently: `aws-cdk` `^2.1133.0`, `react-app-cdk-deploy` (`github:ruchira088/react-app-cdk-deploy#v1`), plus `tsx` `^4.23.1`, `typescript` `^7.0.2` and `@types/node` `^24.13.3` as dev dependencies. It runs `tsx` rather than `ts-node` because TypeScript 7 removed the classic compiler API.
+Separate `package.json`, installed independently: `aws-cdk` `^2.1135.1`, `react-app-cdk-deploy` (`github:ruchira088/react-app-cdk-deploy#v1`), plus `tsx` `^4.23.12`, `typescript` `^7.0.2` and `@types/node` `^24.13.3` as dev dependencies. It runs `tsx` rather than `ts-node` because TypeScript 7 removed the classic compiler API.
 
 ## Toolchain notes
 
