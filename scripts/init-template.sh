@@ -27,6 +27,10 @@
 #   - AWS account ID        "365562660444"
 #   - AWS region            "ap-southeast-2"
 #   - Base domain           "ruchij.com"
+#
+# Portability: this has to run on a stock macOS install as well as GNU/Linux,
+# so it assumes only bash 3.2 and POSIX sed. GNU-only constructs (`sed -i`
+# without a suffix, `\U` in a replacement) are avoided -- see the notes below.
 
 set -euo pipefail
 
@@ -44,12 +48,28 @@ if [[ ! "$NEW_NAME" =~ ^[a-z][a-z0-9-]*[a-z0-9]$ ]]; then
     exit 1
 fi
 
-DEFAULT_DISPLAY="$(echo "$NEW_NAME" | sed -E 's/(^|-)([a-z])/ \U\2/g; s/^ //')"
-NEW_DISPLAY="${2:-$DEFAULT_DISPLAY}"
+# Case conversion via awk. `sed -E 's/(^|-)([a-z])/\U\2/g'` would be shorter but
+# `\U` is a GNU extension: BSD sed emits a literal "U" instead of upper-casing,
+# silently producing a stack name like "UmyUcoolUapp".
+capitalize() {
+    printf '%s' "$1" | awk -F'-' -v sep="$2" \
+        '{for (i = 1; i <= NF; i++) printf "%s%s%s", (i > 1 ? sep : ""), toupper(substr($i, 1, 1)), substr($i, 2)}'
+}
 
-NEW_PASCAL="$(echo "$NEW_NAME" | sed -E 's/(^|-)([a-z])/\U\2/g')"
+NEW_PASCAL="$(capitalize "$NEW_NAME" '')"
+NEW_DISPLAY="${2:-$(capitalize "$NEW_NAME" ' ')}"
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+# Resolved before the `cd` below so the self-delete works regardless of the
+# directory the script was invoked from. `realpath` is avoided: older macOS
+# does not ship it.
+#
+# Both paths are resolved with `pwd -P` so the prefix-strip that derives
+# SCRIPT_REL below cannot be defeated by a symlink appearing in one and not the
+# other -- on macOS /tmp is a symlink to /private/tmp, which is exactly the case
+# where git and the shell disagree about how to spell the same directory.
+SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+
+REPO_ROOT="$(cd "$(git rev-parse --show-toplevel)" && pwd -P)"
 cd "$REPO_ROOT"
 
 if [[ -n "$(git status --porcelain)" ]]; then
@@ -57,34 +77,48 @@ if [[ -n "$(git status --porcelain)" ]]; then
     exit 1
 fi
 
-mapfile -t KEBAB_FILES < <(git grep -lF 'react-template' || true)
-mapfile -t DISPLAY_FILES < <(git grep -lF 'React Template' || true)
-mapfile -t PASCAL_FILES < <(git grep -lF 'ReactTemplate' || true)
+# This script matches all three tokens itself, and is excluded: it gets deleted
+# at the end, so rewriting it is pointless -- and harmful, because bash reads a
+# script lazily as it executes and the rewrite below edits files in place.
+SCRIPT_REL="${SCRIPT_PATH#"$REPO_ROOT"/}"
+FILES="$(git grep -lF -e 'react-template' -e 'React Template' -e 'ReactTemplate' \
+    | grep -vxF "$SCRIPT_REL" || true)"
 
-if [[ ${#KEBAB_FILES[@]} -eq 0 && ${#DISPLAY_FILES[@]} -eq 0 && ${#PASCAL_FILES[@]} -eq 0 ]]; then
+if [[ -z "$FILES" ]]; then
     echo "No occurrences of 'react-template', 'React Template', or 'ReactTemplate' found. Nothing to do." >&2
     exit 0
 fi
 
-# Substitute Pascal first so a name like "react-template" -> "react-templatey"
-# doesn't cause "ReactTemplate" to drift through an intermediate state.
-for f in "${PASCAL_FILES[@]}"; do
-    sed -i "s/ReactTemplate/${NEW_PASCAL}/g" "$f"
-done
+# On the right-hand side of a sed `s///`, `&` expands to the whole match and
+# `\` escapes; the `/` delimiter has to be escaped too. Without this a display
+# name like "Foo & Bar/Baz" would be corrupted or abort the script.
+escape() {
+    printf '%s' "$1" | sed 's|[\\/&]|\\&|g'
+}
 
-for f in "${DISPLAY_FILES[@]}"; do
-    sed -i "s/React Template/${NEW_DISPLAY}/g" "$f"
-done
+# `sed -i` is not portable -- BSD requires a backup-suffix argument that GNU
+# rejects -- so output goes through a temp file. It is copied back with `cat`
+# rather than moved so the original file keeps its permissions.
+#
+# Pascal is substituted first so a name like "react-templatey" cannot drift
+# "ReactTemplate" through an intermediate state; sed applies `-e` in order.
+TMP="$(mktemp)"
+trap 'rm -f "$TMP"' EXIT
 
-for f in "${KEBAB_FILES[@]}"; do
-    sed -i "s/react-template/${NEW_NAME}/g" "$f"
-done
+COUNT=0
+while IFS= read -r file; do
+    sed -e "s/ReactTemplate/$(escape "$NEW_PASCAL")/g" \
+        -e "s/React Template/$(escape "$NEW_DISPLAY")/g" \
+        -e "s/react-template/$(escape "$NEW_NAME")/g" \
+        "$file" > "$TMP"
+    cat "$TMP" > "$file"
+    COUNT=$((COUNT + 1))
+done <<< "$FILES"
 
-SCRIPT_PATH="$(realpath "$0")"
 rm -- "$SCRIPT_PATH"
 
 echo "Renamed to '${NEW_NAME}' (display: '${NEW_DISPLAY}', Pascal: '${NEW_PASCAL}')."
-echo "Touched ${#KEBAB_FILES[@]} kebab / ${#DISPLAY_FILES[@]} display / ${#PASCAL_FILES[@]} Pascal files."
+echo "Updated ${COUNT} files."
 echo
 echo "Next steps:"
 echo "  npm install"
