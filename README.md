@@ -97,7 +97,7 @@ Requires Node **24** (`engines.node: ^24.0.0`). Versions are the ranges declared
 | `clsx`, `tailwind-merge` | `^2.1.1`, `^3.6.0` | the `cn` helper in `app/lib/utils.ts` |
 | `tailwindcss`, `@tailwindcss/vite` | `^4.3.3` | styling; no `tailwind.config.*` |
 | `tw-animate-css` | `^1.4.0` | imported at the top of `app/app.css` |
-| `lucide-react` | `^1.31.0` | icons |
+| `lucide-react` | `^1.33.0` | icons |
 | `axios` | `^1.19.0` | `app/services/http/HttpClient.ts` |
 | `zod` | `^4.4.3` | API schemas in `app/models/` |
 | `luxon` | `^3.7.2` | `DateTime` / `Duration` in `app/types/Zod.ts` and `app/utils/Formatter.ts` |
@@ -110,12 +110,12 @@ Every runtime dependency above is either imported by `app/` or required by the b
 | Package | Version | Used for |
 | --- | --- | --- |
 | `@react-router/dev` | `^8.3.0` | dev server, typegen, `react-router build` |
-| `vite` | `^8.2.1` | bundler (`vite.config.ts`) |
+| `vite` | `^8.2.2` | bundler (`vite.config.ts`) |
 | `typescript` | `^7.0.2` | native (Go) `tsc` — see [Toolchain notes](#toolchain-notes) |
-| `oxlint` | `^1.78.0` | linting (`.oxlintrc.json`) |
-| `vitest`, `@vitest/coverage-v8`, `jsdom` | `^4.1.10`, `^4.1.10`, `^30.0.1` | tests + coverage in a DOM environment |
-| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.2`, `^7.0.1`, `^14.6.3` | component tests (`tests/setup.ts`) |
-| `sass-embedded` | `^1.100.0` | compiles `app/index.scss` |
+| `oxlint` | `^1.79.0` | linting (`.oxlintrc.json`) |
+| `vitest`, `@vitest/coverage-v8`, `jsdom` | `^4.1.11`, `^4.1.11`, `^30.0.1` | tests + coverage in a DOM environment |
+| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.2`, `^7.0.1`, `^14.6.5` | component tests (`tests/setup.ts`) |
+| `sass-embedded` | `^1.102.0` | compiles `app/index.scss` |
 | `simple-git` | `^3.36.0` | `scripts/env-vars.mjs` reads branch/commit |
 | `@types/node`, `@types/react`, `@types/react-dom`, `@types/luxon` | `^24.12.2`, `^19.2.18`, `^19.2.4`, `^3.7.4` | type definitions |
 

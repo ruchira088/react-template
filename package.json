@@ -1,6 +1,6 @@
 {
   "name": "react-template",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": true,
   "type": "module",
   "engines": {
@@ -10,19 +10,19 @@
     "@react-router/dev": "^8.3.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.3",
+    "@testing-library/user-event": "^14.6.5",
     "@types/luxon": "^3.7.4",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "jsdom": "^30.0.1",
-    "oxlint": "^1.78.0",
-    "sass-embedded": "^1.100.0",
+    "oxlint": "^1.79.0",
+    "sass-embedded": "^1.102.0",
     "simple-git": "^3.36.0",
     "typescript": "^7.0.2",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.15",
@@ -33,7 +33,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "isbot": "^5.2.1",
-    "lucide-react": "^1.31.0",
+    "lucide-react": "^1.33.0",
     "luxon": "^3.7.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
