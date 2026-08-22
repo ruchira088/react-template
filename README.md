@@ -114,14 +114,14 @@ Every runtime dependency above is either imported by `app/` or required by the b
 | `typescript` | `^7.0.2` | native (Go) `tsc` — see [Toolchain notes](#toolchain-notes) |
 | `oxlint` | `^1.79.0` | linting (`.oxlintrc.json`) |
 | `vitest`, `@vitest/coverage-v8`, `jsdom` | `^4.1.11`, `^4.1.11`, `^30.0.1` | tests + coverage in a DOM environment |
-| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.2`, `^7.0.1`, `^14.6.5` | component tests (`tests/setup.ts`) |
-| `sass-embedded` | `^1.102.0` | compiles `app/index.scss` |
+| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.2`, `^7.0.1`, `^14.6.6` | component tests (`tests/setup.ts`) |
+| `sass-embedded` | `^1.103.1` | compiles `app/index.scss` |
 | `simple-git` | `^3.36.0` | `scripts/env-vars.mjs` reads branch/commit |
-| `@types/node`, `@types/react`, `@types/react-dom`, `@types/luxon` | `^24.12.2`, `^19.2.18`, `^19.2.4`, `^3.7.4` | type definitions |
+| `@types/node`, `@types/react`, `@types/react-dom`, `@types/luxon` | `^24.13.3`, `^19.2.18`, `^19.2.4`, `^3.7.5` | type definitions |
 
 ### `cdk-deploy/`
 
-Separate `package.json`, installed independently: `aws-cdk` `^2.1135.1`, `react-app-cdk-deploy` (`github:ruchira088/react-app-cdk-deploy#v1`), plus `tsx` `^4.23.12`, `typescript` `^7.0.2` and `@types/node` `^24.13.3` as dev dependencies. It runs `tsx` rather than `ts-node` because TypeScript 7 removed the classic compiler API.
+Separate `package.json`, installed independently: `aws-cdk` `^2.1138.0`, `react-app-cdk-deploy` (`github:ruchira088/react-app-cdk-deploy#v1`), plus `tsx` `^4.23.12`, `typescript` `^7.0.2` and `@types/node` `^24.13.3` as dev dependencies. It runs `tsx` rather than `ts-node` because TypeScript 7 removed the classic compiler API.
 
 ## Toolchain notes
 
