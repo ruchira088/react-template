@@ -26,9 +26,16 @@ export default defineConfig({
         "app/+types/**",
         "app/entry.{client,server}.tsx",
         "app/routes.ts"
-      ]
-      // thresholds: set these once your project has stabilised, e.g.
-      // { statements: 70, branches: 60, functions: 65, lines: 70 }
+      ],
+      // Fails `npm run test:coverage` (and therefore CI) when coverage drops
+      // below these. Set a few points under the template's actual numbers so
+      // small additions don't trip them but a real regression does.
+      thresholds: {
+        statements: 90,
+        branches: 75,
+        functions: 90,
+        lines: 90
+      }
     }
   },
 })

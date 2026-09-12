@@ -55,7 +55,7 @@ Two deliberate choices here are unusual enough to break assumptions. Read this b
 - **Persistence**: `app/services/kv-store/KeyValueStore.ts` is a typed localStorage abstraction (`KeySpace` with key/value codecs). The auth token and app config are stored through it, not via raw `localStorage`.
 - **Theme/config**: `ApplicationConfigurationProvider` holds theme + safe-mode context, persists via the config service, and toggles the `.dark` class on `<html>`.
 - **Styling**: Tailwind v4 via `@tailwindcss/vite` — there is no `tailwind.config.*`; design tokens are CSS variables in `app/app.css` under `:root` and `.dark`. shadcn/ui components are owned source in `app/components/ui/` (add more with `npx shadcn@latest add <component>`; `components.json` is configured).
-- **Tests**: `tests/` mirrors `app/` one-to-one; vitest + jsdom + Testing Library with globals enabled and setup in `tests/setup.ts`. Coverage only counts `app/**`.
+- **Tests**: `tests/` mirrors `app/` one-to-one; vitest + jsdom + Testing Library with globals enabled and setup in `tests/setup.ts`. Coverage only counts `app/**` and is gated by thresholds in `vitest.config.ts` (90% statements/functions/lines, 75% branches) — `npm run test:coverage` fails below them.
 - **Deployment**: GitHub Actions (`.github/workflows/build-pipeline.yml`) → Ansible playbooks (`playbooks/`) for S3 upload and Docker/ghcr publish → CDK (`cdk-deploy/`, wraps `react-app-cdk-deploy`). Non-`main` branches deploy to per-branch subdomains; `main` goes staging → production → GitHub release. `cdk-deploy/` is excluded from vitest.
 
 ## Intentionally hardcoded
