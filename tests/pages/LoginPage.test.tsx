@@ -84,6 +84,26 @@ describe("LoginPage", () => {
     expect(screen.getByRole("button", { name: /Sign in/i })).toBeEnabled()
   })
 
+  test("announces errors as an alert and marks the inputs invalid", async () => {
+    const user = userEvent.setup()
+    vi.mocked(login).mockRejectedValue(new Error("Bad credentials"))
+
+    renderAt("/sign-in")
+
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+    expect(screen.getByLabelText("Email")).not.toHaveAttribute("aria-invalid", "true")
+
+    await user.type(screen.getByLabelText("Email"), "a@b.c")
+    await user.type(screen.getByLabelText("Password"), "pw")
+    await user.click(screen.getByRole("button", { name: /Sign in/i }))
+
+    const alert = await screen.findByRole("alert")
+    expect(alert).toHaveTextContent("Bad credentials")
+    expect(screen.getByLabelText("Email")).toHaveAttribute("aria-invalid", "true")
+    expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "true")
+    expect(screen.getByLabelText("Email")).toHaveAccessibleDescription("Bad credentials")
+  })
+
   test("shows the mock-API banner only when VITE_MOCK_API=true", async () => {
     vi.stubEnv("VITE_MOCK_API", "true")
     renderAt("/sign-in")

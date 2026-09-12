@@ -7,6 +7,8 @@ import { Option } from "~/types/Option"
 import { login, REDIRECT_QUERY_PARAMETER } from "~/services/authentication/AuthenticationService"
 import smallLogo from "~/images/small-logo.svg"
 
+const ERROR_ID = "login-error"
+
 const LoginPage = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -61,6 +63,8 @@ const LoginPage = () => {
             value={email}
             onChange={(event: ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
             autoComplete="email"
+            aria-invalid={error != null}
+            aria-describedby={error != null ? ERROR_ID : undefined}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -71,9 +75,15 @@ const LoginPage = () => {
             value={password}
             onChange={(event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
             autoComplete="current-password"
+            aria-invalid={error != null}
+            aria-describedby={error != null ? ERROR_ID : undefined}
           />
         </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <p id={ERROR_ID} role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        )}
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Signing in…" : "Sign in"}
         </Button>
