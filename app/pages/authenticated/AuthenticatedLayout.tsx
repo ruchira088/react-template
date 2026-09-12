@@ -58,10 +58,8 @@ const AuthenticatedLayout = () => {
     }
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
-
+  // The header chrome depends on nothing auth-related, so it renders straight
+  // away to avoid a blank page; Sign out and the Outlet wait for validation.
   return (
     <>
       <header className="flex items-center justify-between border-b px-6 py-3">
@@ -71,12 +69,14 @@ const AuthenticatedLayout = () => {
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="ghost" onClick={signOut}>
-            Sign out
-          </Button>
+          {isAuthenticated && (
+            <Button variant="ghost" onClick={signOut}>
+              Sign out
+            </Button>
+          )}
         </div>
       </header>
-      <Outlet />
+      {isAuthenticated && <Outlet />}
     </>
   )
 }

@@ -85,7 +85,10 @@ describe("AuthenticatedLayout", () => {
 
     renderAt("/dashboard")
 
-    // Validation is still pending: nothing behind the auth wall may be visible.
+    // Validation is still pending: the static header chrome is shown so the
+    // page doesn't jump, but nothing behind the auth wall may be visible.
+    expect(screen.getByRole("link", { name: /React Template/ })).toBeInTheDocument()
+    expect(screen.getByTestId("theme-toggle")).toBeInTheDocument()
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument()
     expect(screen.queryByText("Sign out")).not.toBeInTheDocument()
 
