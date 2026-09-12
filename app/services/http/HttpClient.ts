@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance } from "axios"
 import { apiConfiguration } from "~/services/ApiConfiguration"
-import { removeAuthenticationToken } from "../authentication/AuthenticationService"
-import { mockApiAdapter } from "./MockApi"
+import { removeAuthenticationToken } from "~/services/authentication/AuthenticationTokenStore"
+import { mockApiAdapter } from "~/services/http/MockApi"
 
 const isMockApiEnabled = import.meta.env.VITE_MOCK_API === "true"
 

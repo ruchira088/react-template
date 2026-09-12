@@ -53,9 +53,9 @@ app/
     Config.ts                          environment detection by hostname
     ApiConfiguration.ts                base API URL inference + VITE_API_URL override
     Sentry.ts                          DSN-per-env init (placeholders)
-    authentication/                    login/logout/getUser via axios + Zod
+    authentication/                    login/logout/getUser via axios + Zod; AuthenticationTokenStore owns the persisted token
     config/                            localStorage-backed app config
-    http/                              axios client, 401 handler hooks AuthenticationService
+    http/                              axios client, 401 handler clears the token via AuthenticationTokenStore
     kv-store/                          generic typed localStorage abstraction
   models/                              Zod schemas for API objects
   types/                               Option, Either, Zod helpers

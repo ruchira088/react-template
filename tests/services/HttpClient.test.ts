@@ -7,9 +7,10 @@ vi.mock("~/services/ApiConfiguration", () => ({
   },
 }))
 
-// Mock the AuthenticationService
+// Mock the token store. HttpClient must depend on the store rather than on
+// AuthenticationService, otherwise the two modules import each other.
 const mockRemoveAuthenticationToken = vi.fn()
-vi.mock("~/services/authentication/AuthenticationService", () => ({
+vi.mock("~/services/authentication/AuthenticationTokenStore", () => ({
   removeAuthenticationToken: () => mockRemoveAuthenticationToken(),
 }))
 
