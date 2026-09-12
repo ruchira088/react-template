@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from "react-router"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { ThemeToggle } from "~/components/ThemeToggle"
 import type { AuthenticationToken } from "~/models/AuthenticationToken"
@@ -15,6 +15,9 @@ import type { Option } from "~/types/Option"
 
 const AuthenticatedLayout = () => {
   const navigate = useNavigate()
+  // Nothing behind the auth wall renders until the stored token has been
+  // validated against the API, so a stale token never flashes protected content.
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
     checkAuthentication()
@@ -33,6 +36,7 @@ const AuthenticatedLayout = () => {
       async _ => {
         try {
           await getAuthenticatedUser()
+          setIsAuthenticated(true)
         } catch {
           removeAuthenticationToken()
           console.debug("Removing authentication token and redirecting to sign-in page.")
@@ -52,6 +56,10 @@ const AuthenticatedLayout = () => {
       removeAuthenticationToken()
       navigate("/sign-in")
     }
+  }
+
+  if (!isAuthenticated) {
+    return null
   }
 
   return (

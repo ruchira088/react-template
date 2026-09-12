@@ -1,5 +1,5 @@
 import { describe, expect, test, vi, beforeEach } from "vitest"
-import { render, screen, waitFor } from "@testing-library/react"
+import { act, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes } from "react-router"
 import { DateTime } from "luxon"
@@ -74,6 +74,26 @@ describe("AuthenticatedLayout", () => {
     expect(screen.getByTestId("theme-toggle")).toBeInTheDocument()
   })
 
+  test("does not render protected content until the token has been validated", async () => {
+    vi.mocked(getAuthenticationToken).mockReturnValue(Some.of(mockToken))
+    let resolveUser: (user: never) => void = () => {}
+    vi.mocked(getAuthenticatedUser).mockReturnValue(
+      new Promise<never>(resolve => {
+        resolveUser = resolve
+      })
+    )
+
+    renderAt("/dashboard")
+
+    // Validation is still pending: nothing behind the auth wall may be visible.
+    expect(screen.queryByText("Protected content")).not.toBeInTheDocument()
+    expect(screen.queryByText("Sign out")).not.toBeInTheDocument()
+
+    await act(async () => resolveUser({} as never))
+
+    expect(await screen.findByText("Protected content")).toBeInTheDocument()
+  })
+
   test("removes the token and redirects when getAuthenticatedUser throws", async () => {
     vi.mocked(getAuthenticationToken).mockReturnValue(Some.of(mockToken))
     vi.mocked(getAuthenticatedUser).mockRejectedValue(new Error("nope"))
@@ -105,6 +125,7 @@ describe("AuthenticatedLayout", () => {
     vi.mocked(getAuthenticationToken).mockReturnValue(Some.of(mockToken))
     vi.mocked(getAuthenticatedUser).mockResolvedValue({} as never)
     vi.mocked(logout).mockRejectedValue(new Error("server unreachable"))
+    vi.spyOn(console, "debug").mockImplementation(() => {})
 
     renderAt("/dashboard")
     await screen.findByText("Protected content")
