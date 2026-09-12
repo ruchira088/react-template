@@ -1,6 +1,6 @@
-# CLAUDE.md
+# Repository guide
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for coding agents working in this repository. Read as `CLAUDE.md` by Claude Code and as `AGENTS.md` (a symlink to this file) by Codex and other agent CLIs.
 
 ## What this repo is
 
@@ -23,13 +23,13 @@ Every commit auto-bumps the patch version in `package.json` and `package-lock.js
 
 ## Dependencies
 
-Node 24 (`engines.node: ^24.0.0`). The load-bearing versions: React 19.2, React Router 8.3 (`react-router` + `@react-router/dev`), Vite 8.2, Vitest 4.1 + jsdom 30, TypeScript 7.0, oxlint 1.79, Tailwind 4.3 (`tailwindcss` + `@tailwindcss/vite`), Zod 4.4, axios 1.19, Luxon 3.7, `@sentry/react` 10.70. Testing Library (`react` 16.3, `jest-dom` 7, `user-event` 14.6). `sass-embedded` compiles `app/index.scss`; `simple-git` powers `scripts/env-vars.mjs`. `@types/node` is deliberately held on the 24 line (in both `package.json` files) to track `engines.node` — don't bump it to 26 while the runtime is Node 24. shadcn's runtime deps are `@radix-ui/react-label`, `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tw-animate-css`, `lucide-react`.
+Node 24 (`engines.node: ^24.0.0`). The load-bearing versions: React 19.3, React Router 8.3 (`react-router` + `@react-router/dev`), Vite 8.3, Vitest 5.0 + jsdom 30, TypeScript 7.0, oxlint 1.82, Tailwind 4.3 (`tailwindcss` + `@tailwindcss/vite`), Zod 4.6, axios 1.20, Luxon 3.7, `@sentry/react` 10.74. Testing Library (`react` 16.3, `jest-dom` 7, `user-event` 14.6). `sass-embedded` compiles `app/index.scss`; `simple-git` powers `scripts/env-vars.mjs`. `@types/node` is deliberately held on the 24 line (in both `package.json` files) to track `engines.node` — don't bump it to 26 while the runtime is Node 24. shadcn's runtime deps are `@radix-ui/react-label`, `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tw-animate-css`, `lucide-react`.
 
 `cdk-deploy/` has its own `package.json` (installed separately): `aws-cdk` 2.x, `react-app-cdk-deploy` from GitHub, and `tsx` — not `ts-node`, which needs the removed TS compiler API.
 
 The dependency list is kept minimal — every runtime dependency is imported by `app/` or required by the build. `@dnd-kit/*`, `classnames` and `@react-router/node` were removed as unused; `@react-router/node` is still resolvable transitively via `@react-router/dev`. Use `cn` from `~/lib/utils` rather than reintroducing `classnames`.
 
-`isbot` is the exception: no source file imports it, but **`react-router typegen` will silently rewrite `package.json` to re-add it** (as a bare `"isbot": "^5"`, appended out of sorted order) and run an install that prunes `devDependencies`, which leaves `node_modules` broken until the next `npm install`. Don't remove it. If it does get re-added, restore the pinned `^5.2.1` in sorted position and re-run `npm install`.
+`isbot` is the exception: no source file imports it, but **`react-router typegen` will silently rewrite `package.json` to re-add it** (as a bare `"isbot": "^5"`, appended out of sorted order) and run an install that prunes `devDependencies`, which leaves `node_modules` broken until the next `npm install`. Don't remove it. If it does get re-added, restore the pinned `^5.2.2` in sorted position and re-run `npm install`.
 
 **When you change a dependency — add, remove, or bump a version — update `README.md` in the same change.** Its `## Dependencies` section lists every package with its version range, and the intro paragraph and `## Toolchain notes` section name specific versions too. Grep `README.md` for the old version string before finishing.
 

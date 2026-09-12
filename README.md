@@ -1,6 +1,6 @@
 # react-template
 
-Personal starting point for new React SPAs hosted under `ruchij.com`. Mirrors the structure of `video-downloader-front-end`: React 19 + React Router 8 (SPA, no SSR) on Node 24, Vite 8, Vitest 4, TypeScript 7, oxlint, Tailwind CSS v4 + shadcn/ui, Sentry, Axios + Zod 4, auth/unauth layout split, Ansible playbooks for build artefacts and Docker, multi-stage GitHub Actions pipeline, and CDK deployment via the `react-app-cdk-deploy` library.
+Personal starting point for new React SPAs hosted under `ruchij.com`. Mirrors the structure of `video-downloader-front-end`: React 19 + React Router 8 (SPA, no SSR) on Node 24, Vite 8, Vitest 5, TypeScript 7, oxlint, Tailwind CSS v4 + shadcn/ui, Sentry, Axios + Zod 4, auth/unauth layout split, Ansible playbooks for build artefacts and Docker, multi-stage GitHub Actions pipeline, and CDK deployment via the `react-app-cdk-deploy` library.
 
 ## Using this template
 
@@ -89,19 +89,19 @@ Requires Node **24** (`engines.node: ^24.0.0`). Versions are the ranges declared
 
 | Package | Version | Used for |
 | --- | --- | --- |
-| `react`, `react-dom` | `^19.2.8` | — |
-| `react-router` | `^8.3.0` | SPA routing (`app/routes.ts`) |
-| `isbot` | `^5.2.1` | not imported by app code, but **required** — `react-router typegen` re-adds it to `package.json` if it's missing |
+| `react`, `react-dom` | `^19.3.0` | — |
+| `react-router` | `^8.3.1` | SPA routing (`app/routes.ts`) |
+| `isbot` | `^5.2.2` | not imported by app code, but **required** — `react-router typegen` re-adds it to `package.json` if it's missing |
 | `@radix-ui/react-label`, `@radix-ui/react-slot` | `^2.1.15`, `^1.3.3` | primitives behind the shadcn `label` / `button` |
 | `class-variance-authority` | `^0.7.1` | variant definitions in `app/components/ui/button.tsx` |
 | `clsx`, `tailwind-merge` | `^2.1.1`, `^3.6.0` | the `cn` helper in `app/lib/utils.ts` |
 | `tailwindcss`, `@tailwindcss/vite` | `^4.3.3` | styling; no `tailwind.config.*` |
 | `tw-animate-css` | `^1.4.0` | imported at the top of `app/app.css` |
-| `lucide-react` | `^1.33.0` | icons |
-| `axios` | `^1.19.0` | `app/services/http/HttpClient.ts` |
-| `zod` | `^4.4.3` | API schemas in `app/models/` |
+| `lucide-react` | `^1.45.0` | icons |
+| `axios` | `^1.20.0` | `app/services/http/HttpClient.ts` |
+| `zod` | `^4.6.2` | API schemas in `app/models/` |
 | `luxon` | `^3.7.2` | `DateTime` / `Duration` in `app/types/Zod.ts` and `app/utils/Formatter.ts` |
-| `@sentry/react` | `^10.70.0` | `app/services/Sentry.ts`, error capture in `app/root.tsx` |
+| `@sentry/react` | `^10.74.0` | `app/services/Sentry.ts`, error capture in `app/root.tsx` |
 
 Every runtime dependency above is either imported by `app/` or required by the build. `@dnd-kit/*`, `classnames` and `@react-router/node` were removed as unused — add `@dnd-kit` back if a project needs drag-and-drop, and reach for `cn` (`clsx` + `tailwind-merge`) rather than reinstalling `classnames`. `@react-router/node` is still installed transitively by `@react-router/dev`, so nothing needs it declared here.
 
@@ -109,19 +109,19 @@ Every runtime dependency above is either imported by `app/` or required by the b
 
 | Package | Version | Used for |
 | --- | --- | --- |
-| `@react-router/dev` | `^8.3.0` | dev server, typegen, `react-router build` |
-| `vite` | `^8.2.2` | bundler (`vite.config.ts`) |
+| `@react-router/dev` | `^8.3.1` | dev server, typegen, `react-router build` |
+| `vite` | `^8.3.0` | bundler (`vite.config.ts`) |
 | `typescript` | `^7.0.2` | native (Go) `tsc` — see [Toolchain notes](#toolchain-notes) |
-| `oxlint` | `^1.79.0` | linting (`.oxlintrc.json`) |
-| `vitest`, `@vitest/coverage-v8`, `jsdom` | `^4.1.11`, `^4.1.11`, `^30.0.1` | tests + coverage in a DOM environment |
-| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.2`, `^7.0.1`, `^14.6.6` | component tests (`tests/setup.ts`) |
-| `sass-embedded` | `^1.103.1` | compiles `app/index.scss` |
+| `oxlint` | `^1.82.0` | linting (`.oxlintrc.json`) |
+| `vitest`, `@vitest/coverage-v8`, `jsdom` | `^5.0.0`, `^5.0.0`, `^30.0.1` | tests + coverage in a DOM environment |
+| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | `^16.3.3`, `^7.0.1`, `^14.6.7` | component tests (`tests/setup.ts`) |
+| `sass-embedded` | `^1.104.1` | compiles `app/index.scss` |
 | `simple-git` | `^3.36.0` | `scripts/env-vars.mjs` reads branch/commit |
-| `@types/node`, `@types/react`, `@types/react-dom`, `@types/luxon` | `^24.13.3`, `^19.2.18`, `^19.2.4`, `^3.7.5` | type definitions |
+| `@types/node`, `@types/react`, `@types/react-dom`, `@types/luxon` | `^24.13.4`, `^19.3.0`, `^19.3.0`, `^3.7.5` | type definitions |
 
 ### `cdk-deploy/`
 
-Separate `package.json`, installed independently: `aws-cdk` `^2.1138.0`, `react-app-cdk-deploy` (`github:ruchira088/react-app-cdk-deploy#v1`), plus `tsx` `^4.23.12`, `typescript` `^7.0.2` and `@types/node` `^24.13.3` as dev dependencies. It runs `tsx` rather than `ts-node` because TypeScript 7 removed the classic compiler API.
+Separate `package.json`, installed independently: `aws-cdk` `^2.1141.0`, `react-app-cdk-deploy` (`github:ruchira088/react-app-cdk-deploy#v1`), plus `tsx` `^4.23.13`, `typescript` `^7.0.2` and `@types/node` `^24.13.4` as dev dependencies. It runs `tsx` rather than `ts-node` because TypeScript 7 removed the classic compiler API.
 
 ## Toolchain notes
 
