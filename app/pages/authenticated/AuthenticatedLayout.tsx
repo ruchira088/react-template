@@ -6,6 +6,7 @@ import type { AuthenticationToken } from "~/models/AuthenticationToken"
 import {
   getAuthenticatedUser,
   getAuthenticationToken,
+  logout,
   REDIRECT_QUERY_PARAMETER,
   removeAuthenticationToken
 } from "~/services/authentication/AuthenticationService"
@@ -41,6 +42,18 @@ const AuthenticatedLayout = () => {
     )
   }
 
+  const signOut = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      // The server session may already be gone; the local token is cleared regardless.
+      console.debug("Logout request failed; clearing local token anyway.", error)
+    } finally {
+      removeAuthenticationToken()
+      navigate("/sign-in")
+    }
+  }
+
   return (
     <>
       <header className="flex items-center justify-between border-b px-6 py-3">
@@ -50,13 +63,7 @@ const AuthenticatedLayout = () => {
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button
-            variant="ghost"
-            onClick={() => {
-              removeAuthenticationToken()
-              navigate("/sign-in")
-            }}
-          >
+          <Button variant="ghost" onClick={signOut}>
             Sign out
           </Button>
         </div>

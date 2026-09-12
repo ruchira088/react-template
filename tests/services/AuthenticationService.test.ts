@@ -102,7 +102,7 @@ describe("AuthenticationService", () => {
 
       await logout()
 
-      expect(mockAxiosDelete).toHaveBeenCalledWith("authentication/logout")
+      expect(mockAxiosDelete).toHaveBeenCalledWith("/authentication/logout")
     })
 
     test("should return the logged out user", async () => {

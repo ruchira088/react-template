@@ -9,6 +9,7 @@ import { None, Some } from "~/types/Option"
 vi.mock("~/services/authentication/AuthenticationService", () => ({
   getAuthenticationToken: vi.fn(),
   getAuthenticatedUser: vi.fn(),
+  logout: vi.fn(),
   removeAuthenticationToken: vi.fn(),
   REDIRECT_QUERY_PARAMETER: "redirect",
 }))
@@ -21,6 +22,7 @@ import AuthenticatedLayout from "~/pages/authenticated/AuthenticatedLayout"
 import {
   getAuthenticationToken,
   getAuthenticatedUser,
+  logout,
   removeAuthenticationToken,
 } from "~/services/authentication/AuthenticationService"
 
@@ -47,6 +49,7 @@ describe("AuthenticatedLayout", () => {
   beforeEach(() => {
     vi.mocked(getAuthenticationToken).mockReset()
     vi.mocked(getAuthenticatedUser).mockReset()
+    vi.mocked(logout).mockReset()
     vi.mocked(removeAuthenticationToken).mockReset()
   })
 
@@ -81,10 +84,11 @@ describe("AuthenticatedLayout", () => {
     expect(vi.mocked(removeAuthenticationToken)).toHaveBeenCalledOnce()
   })
 
-  test("Sign-out button clears the token and navigates to /sign-in", async () => {
+  test("Sign-out button calls logout, clears the token and navigates to /sign-in", async () => {
     const user = userEvent.setup()
     vi.mocked(getAuthenticationToken).mockReturnValue(Some.of(mockToken))
     vi.mocked(getAuthenticatedUser).mockResolvedValue({} as never)
+    vi.mocked(logout).mockResolvedValue({} as never)
 
     renderAt("/dashboard")
     await screen.findByText("Protected content")
@@ -92,6 +96,23 @@ describe("AuthenticatedLayout", () => {
     await user.click(screen.getByRole("button", { name: "Sign out" }))
 
     await waitFor(() => expect(screen.getByText("Sign-in page")).toBeInTheDocument())
+    expect(vi.mocked(logout)).toHaveBeenCalledOnce()
+    expect(vi.mocked(removeAuthenticationToken)).toHaveBeenCalled()
+  })
+
+  test("Sign-out still clears the token and navigates when the logout API call fails", async () => {
+    const user = userEvent.setup()
+    vi.mocked(getAuthenticationToken).mockReturnValue(Some.of(mockToken))
+    vi.mocked(getAuthenticatedUser).mockResolvedValue({} as never)
+    vi.mocked(logout).mockRejectedValue(new Error("server unreachable"))
+
+    renderAt("/dashboard")
+    await screen.findByText("Protected content")
+
+    await user.click(screen.getByRole("button", { name: "Sign out" }))
+
+    await waitFor(() => expect(screen.getByText("Sign-in page")).toBeInTheDocument())
+    expect(vi.mocked(logout)).toHaveBeenCalledOnce()
     expect(vi.mocked(removeAuthenticationToken)).toHaveBeenCalled()
   })
 })
