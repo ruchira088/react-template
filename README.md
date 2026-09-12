@@ -40,6 +40,7 @@ The following are intentionally **not** rewritten — change them by hand if you
 
 ```
 .github/workflows/build-pipeline.yml   transpile/test -> S3 upload -> docker -> cdk deploy -> release
+.github/dependabot.yml                 weekly grouped dependency PRs (npm root + cdk-deploy, GitHub Actions)
 app/
   app.css                              Tailwind v4 entrypoint + shadcn CSS variables (light/dark)
   index.scss                           HydrateFallback loading-screen styles only

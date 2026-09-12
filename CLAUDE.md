@@ -31,6 +31,8 @@ The dependency list is kept minimal — every runtime dependency is imported by 
 
 `isbot` is the exception: no source file imports it, but **`react-router typegen` will silently rewrite `package.json` to re-add it** (as a bare `"isbot": "^5"`, appended out of sorted order) and run an install that prunes `devDependencies`, which leaves `node_modules` broken until the next `npm install`. Don't remove it. If it does get re-added, restore the pinned `^5.2.2` in sorted position and re-run `npm install`.
 
+Dependabot (`.github/dependabot.yml`) raises weekly grouped PRs for npm (root and `cdk-deploy/`) and GitHub Actions; `@types/node` majors are ignored there for the reason above. Dependabot PRs don't touch `README.md`, so the version references below still need syncing when one is merged.
+
 **When you change a dependency — add, remove, or bump a version — update `README.md` in the same change.** Its `## Dependencies` section lists every package with its version range, and the intro paragraph and `## Toolchain notes` section name specific versions too. Grep `README.md` for the old version string before finishing.
 
 ## Toolchain constraints

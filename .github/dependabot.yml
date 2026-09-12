@@ -1,0 +1,49 @@
+version: 2
+updates:
+  # Root app: one weekly PR for all minor/patch bumps; majors get their own PR.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Australia/Melbourne
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # @types/node tracks engines.node (24), not the latest Node release.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: npm
+    directory: /cdk-deploy
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Australia/Melbourne
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: deps(cdk-deploy)
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Australia/Melbourne
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
