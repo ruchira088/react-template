@@ -76,6 +76,12 @@ export function HydrateFallback() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  // Report from an effect, not during render, so React re-rendering this
+  // boundary doesn't re-report the same error.
+  useEffect(() => {
+    captureException(error)
+  }, [error])
+
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
@@ -90,8 +96,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     details = error.message;
     stack = error.stack;
   }
-
-  captureException(error)
 
   return (
     <main className="pt-16 p-4 container mx-auto">
