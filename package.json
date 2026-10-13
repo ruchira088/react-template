@@ -19,7 +19,7 @@
     "jsdom": "^30.0.1",
     "oxlint": "^1.82.0",
     "sass-embedded": "^1.104.1",
-    "simple-git": "^3.36.0",
+    "simple-git": "^4.0.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.0"
