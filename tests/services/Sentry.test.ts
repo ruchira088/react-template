@@ -19,7 +19,8 @@ vi.mock("~/services/Config", () => ({
 }))
 
 import * as Sentry from "@sentry/react"
-import { initSentry } from "~/services/Sentry"
+import { Environment } from "~/services/Config"
+import { getTracesSampleRate, initSentry } from "~/services/Sentry"
 
 describe("initSentry", () => {
   beforeEach(() => {
@@ -36,5 +37,18 @@ describe("initSentry", () => {
     initSentry()
     initSentry()
     expect(vi.mocked(Sentry.init)).not.toHaveBeenCalled()
+  })
+})
+
+describe("getTracesSampleRate", () => {
+  test("traces every transaction outside production", () => {
+    expect(getTracesSampleRate(Environment.Development)).toBe(1)
+    expect(getTracesSampleRate(Environment.Staging)).toBe(1)
+  })
+
+  test("samples a fraction of production transactions to bound Sentry cost", () => {
+    const rate = getTracesSampleRate(Environment.Production)
+    expect(rate).toBeGreaterThan(0)
+    expect(rate).toBeLessThan(1)
   })
 })
