@@ -47,7 +47,7 @@ app/
   components/ui/                       shadcn primitives (Button, Input, Label)
   components/ThemeToggle.tsx           sun/moon toggle wired to the config provider
   lib/utils.ts                         `cn` helper (clsx + tailwind-merge)
-  pages/authenticated/                 layout that requires a token; HomePage stub
+  pages/authenticated/                 layout that requires a token, exposes the user via useAuthenticatedUser(); HomePage stub
   pages/unauthenticated/               login (working) + signup (stub) under a public layout
   providers/                           ApplicationConfigurationProvider (theme + safe-mode context, toggles `.dark` on `<html>`)
   services/
@@ -71,7 +71,7 @@ tests/                                 mirrors app/; vitest + jsdom + testing-li
 
 ## Mock API for local dev
 
-`npm run start` and `npm run build` both set `VITE_MOCK_API=true`, which swaps in `app/services/http/MockApi.ts` as the axios adapter. The three `/authentication/*` endpoints used by `AuthenticationService` are served from memory so you can sign in with any non-empty email and password — no backend required. The login page shows a small banner when the mock is active. All other API calls 404 through the adapter so missing handlers are obvious.
+`npm run start` and `npm run build` both set `VITE_MOCK_API=true`, which swaps in `app/services/http/MockApi.ts` as the axios adapter. The three `/authentication/*` endpoints used by `AuthenticationService` are mocked so you can sign in with any non-empty email and password — no backend required. The mock remembers who signed in via localStorage, so the demo session survives a page reload. The login page shows a small banner when the mock is active. All other API calls 404 through the adapter so missing handlers are obvious.
 
 This is on by default so the template is demo-able with no extra setup. Once you have a real backend, drop `VITE_MOCK_API=true` from `start` and `build` in `package.json`, and use `start:dev` / `start:local` / `start:staging` (which point at concrete API URLs) for local development.
 
