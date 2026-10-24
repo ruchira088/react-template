@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach } from "vitest"
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest"
 import { render, screen } from "@testing-library/react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { createRoutesStub, MemoryRouter, Route, Routes } from "react-router"
@@ -71,6 +71,51 @@ describe("root", () => {
       expect(html).toMatch(/^<html lang="en">/)
       expect(html).toContain('<meta charSet="utf-8"/>')
       expect(html).toContain("<div>page content</div>")
+    })
+  })
+
+  describe("theme script", () => {
+    // Runs the inline <head> script exactly as the browser would before first paint.
+    const runThemeScript = () => {
+      const Stub = createRoutesStub([{ path: "/", Component: () => <Layout><div /></Layout> }])
+      const html = renderToStaticMarkup(<Stub initialEntries={["/"]} />)
+      const script = html.match(/<script>(.*?)<\/script>/s)?.[1]
+      expect(script).toBeDefined()
+      new Function(script!)()
+    }
+
+    const storeTheme = (theme: string) =>
+      localStorage.setItem("application-configuration-AppConfigKey", JSON.stringify({ theme, safeMode: false }))
+
+    afterEach(() => {
+      localStorage.clear()
+      document.documentElement.classList.remove("dark")
+      vi.mocked(window.matchMedia).mockImplementation(query => ({ matches: false, media: query }) as MediaQueryList)
+    })
+
+    test("applies a stored dark theme", () => {
+      storeTheme("dark")
+      runThemeScript()
+      expect(document.documentElement).toHaveClass("dark")
+    })
+
+    test("a stored light theme wins over a dark OS preference", () => {
+      storeTheme("light")
+      vi.mocked(window.matchMedia).mockImplementation(query => ({ matches: true, media: query }) as MediaQueryList)
+      runThemeScript()
+      expect(document.documentElement).not.toHaveClass("dark")
+    })
+
+    test("falls back to the OS preference when nothing is stored", () => {
+      vi.mocked(window.matchMedia).mockImplementation(query => ({ matches: true, media: query }) as MediaQueryList)
+      runThemeScript()
+      expect(document.documentElement).toHaveClass("dark")
+    })
+
+    test("ignores unreadable stored configuration", () => {
+      localStorage.setItem("application-configuration-AppConfigKey", "{not json")
+      expect(runThemeScript).not.toThrow()
+      expect(document.documentElement).not.toHaveClass("dark")
     })
   })
 

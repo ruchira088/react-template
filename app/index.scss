@@ -11,7 +11,7 @@
   background-color: #eee;
   z-index: 9999;
 
-  @media (prefers-color-scheme: dark) {
+  :root.dark & {
     background-color: #222;
   }
 }
@@ -52,7 +52,7 @@
   color: #222;
   margin: 0;
 
-  @media (prefers-color-scheme: dark) {
+  :root.dark & {
     color: #eee;
   }
 }
@@ -71,16 +71,6 @@
   background: #d80027;
   border-radius: 2px;
   animation: loadingBar 1.2s ease-in-out infinite;
-}
-
-.loading-text {
-  font-size: 0.875rem;
-  color: #666;
-  margin: 0;
-
-  @media (prefers-color-scheme: dark) {
-    color: #aaa;
-  }
 }
 
 @keyframes spin {

@@ -48,5 +48,10 @@ export class LocalStorageConfigurationService extends ConfigurationService {
   }
 }
 
+const applicationConfigurationStore = new LocalKeyValueStore(ApplicationConfigurationKeySpace)
+
+// The raw localStorage key, for code that must read the configuration before the app loads.
+export const APPLICATION_CONFIGURATION_STORAGE_KEY = applicationConfigurationStore.stringKey(AppConfigKey)
+
 export const localStorageConfigurationService =
-  new LocalStorageConfigurationService(new LocalKeyValueStore(ApplicationConfigurationKeySpace))
+  new LocalStorageConfigurationService(applicationConfigurationStore)

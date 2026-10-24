@@ -7,6 +7,7 @@ import "./index.scss"
 import { ApplicationConfigurationProvider } from "~/providers/ApplicationConfigurationProvider"
 import smallLogo from "~/images/small-logo.svg"
 import { initSentry } from "~/services/Sentry"
+import { APPLICATION_CONFIGURATION_STORAGE_KEY } from "~/services/config/ConfigurationService"
 
 export function meta(_args: Route.MetaArgs) {
   return [
@@ -28,12 +29,24 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+// Applies the saved theme (or the OS preference) before first paint, so the
+// loading screen and app don't flash the wrong theme while the bundle loads.
+// ApplicationConfigurationProvider takes over once React is running.
+const themeScript = `
+try {
+  var config = JSON.parse(localStorage.getItem(${JSON.stringify(APPLICATION_CONFIGURATION_STORAGE_KEY)}) || "null");
+  var dark = config ? config.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.classList.toggle("dark", dark);
+} catch (e) {}
+`
+
 export function Layout({children}: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Meta />
         <Links />
       </head>
