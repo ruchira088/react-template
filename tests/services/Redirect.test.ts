@@ -30,6 +30,9 @@ describe("safeRedirectPath", () => {
     "/\\evil.example.com",
     "/\t/evil.example.com",
     "/\n/evil.example.com",
+    "/.//evil.example.com",
+    "/a/..//evil.example.com",
+    "/%2e//evil.example.com",
     "javascript:alert(1)",
     "dashboard",
     ""
