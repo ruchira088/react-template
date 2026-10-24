@@ -5,7 +5,6 @@ import { MemoryRouter, Route, Routes } from "react-router"
 
 vi.mock("~/services/authentication/AuthenticationService", () => ({
   login: vi.fn(),
-  REDIRECT_QUERY_PARAMETER: "redirect",
 }))
 
 import LoginPage from "~/pages/unauthenticated/login/LoginPage"
@@ -68,6 +67,19 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: /Sign in/i }))
 
     await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument())
+  })
+
+  test("ignores an off-site ?redirect= and navigates to /", async () => {
+    const user = userEvent.setup()
+    vi.mocked(login).mockResolvedValue({} as never)
+
+    renderAt("/sign-in?redirect=%2F%2Fevil.example.com")
+
+    await user.type(screen.getByLabelText("Email"), "a@b.c")
+    await user.type(screen.getByLabelText("Password"), "pw")
+    await user.click(screen.getByRole("button", { name: /Sign in/i }))
+
+    await waitFor(() => expect(screen.getByText("Home")).toBeInTheDocument())
   })
 
   test("surfaces login errors and re-enables the submit button", async () => {

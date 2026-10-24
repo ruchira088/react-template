@@ -1,7 +1,7 @@
 import { describe, expect, test, vi, beforeEach } from "vitest"
 import { act, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { MemoryRouter, Route, Routes } from "react-router"
+import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { DateTime } from "luxon"
 
 import { None, Some } from "~/types/Option"
@@ -11,14 +11,13 @@ vi.mock("~/services/authentication/AuthenticationService", () => ({
   getAuthenticatedUser: vi.fn(),
   logout: vi.fn(),
   removeAuthenticationToken: vi.fn(),
-  REDIRECT_QUERY_PARAMETER: "redirect",
 }))
 
 vi.mock("~/components/ThemeToggle", () => ({
   ThemeToggle: () => <div data-testid="theme-toggle" />,
 }))
 
-import AuthenticatedLayout from "~/pages/authenticated/AuthenticatedLayout"
+import AuthenticatedLayout, { useAuthenticatedUser } from "~/pages/authenticated/AuthenticatedLayout"
 import {
   getAuthenticationToken,
   getAuthenticatedUser,
@@ -33,13 +32,21 @@ const mockToken = {
   renewals: 0,
 }
 
+const CurrentUser = () => <div>Signed in as {useAuthenticatedUser().email}</div>
+
+const SignInPage = () => {
+  const location = useLocation()
+  return <div data-testid="sign-in-search">Sign-in page{location.search}</div>
+}
+
 const renderAt = (entry: string) =>
   render(
     <MemoryRouter initialEntries={[entry]}>
       <Routes>
-        <Route path="/sign-in" element={<div>Sign-in page</div>} />
+        <Route path="/sign-in" element={<SignInPage />} />
         <Route element={<AuthenticatedLayout />}>
           <Route path="/dashboard" element={<div>Protected content</div>} />
+          <Route path="/me" element={<CurrentUser />} />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -58,9 +65,19 @@ describe("AuthenticatedLayout", () => {
 
     renderAt("/dashboard")
 
-    await waitFor(() => expect(screen.getByText("Sign-in page")).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/Sign-in page/)).toBeInTheDocument())
     // The header should NOT have rendered since we redirected away.
     expect(screen.queryByText("Sign out")).not.toBeInTheDocument()
+  })
+
+  test("keeps the query string and hash in the sign-in redirect", async () => {
+    vi.mocked(getAuthenticationToken).mockReturnValue(None.of())
+
+    renderAt("/dashboard?tab=a&page=2#section")
+
+    const signIn = await screen.findByTestId("sign-in-search")
+    const search = new URLSearchParams(signIn.textContent!.replace("Sign-in page", ""))
+    expect(search.get("redirect")).toBe("/dashboard?tab=a&page=2#section")
   })
 
   test("renders the Outlet + header when authenticated", async () => {
@@ -72,6 +89,15 @@ describe("AuthenticatedLayout", () => {
     expect(await screen.findByText("Protected content")).toBeInTheDocument()
     expect(screen.getByText("Sign out")).toBeInTheDocument()
     expect(screen.getByTestId("theme-toggle")).toBeInTheDocument()
+  })
+
+  test("exposes the validated user to child routes", async () => {
+    vi.mocked(getAuthenticationToken).mockReturnValue(Some.of(mockToken))
+    vi.mocked(getAuthenticatedUser).mockResolvedValue({ email: "alice@example.com" } as never)
+
+    renderAt("/me")
+
+    expect(await screen.findByText("Signed in as alice@example.com")).toBeInTheDocument()
   })
 
   test("does not render protected content until the token has been validated", async () => {
@@ -103,7 +129,7 @@ describe("AuthenticatedLayout", () => {
 
     renderAt("/dashboard")
 
-    await waitFor(() => expect(screen.getByText("Sign-in page")).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/Sign-in page/)).toBeInTheDocument())
     expect(vi.mocked(removeAuthenticationToken)).toHaveBeenCalledOnce()
   })
 
@@ -118,7 +144,7 @@ describe("AuthenticatedLayout", () => {
 
     await user.click(screen.getByRole("button", { name: "Sign out" }))
 
-    await waitFor(() => expect(screen.getByText("Sign-in page")).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/Sign-in page/)).toBeInTheDocument())
     expect(vi.mocked(logout)).toHaveBeenCalledOnce()
     expect(vi.mocked(removeAuthenticationToken)).toHaveBeenCalled()
   })
@@ -135,7 +161,7 @@ describe("AuthenticatedLayout", () => {
 
     await user.click(screen.getByRole("button", { name: "Sign out" }))
 
-    await waitFor(() => expect(screen.getByText("Sign-in page")).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/Sign-in page/)).toBeInTheDocument())
     expect(vi.mocked(logout)).toHaveBeenCalledOnce()
     expect(vi.mocked(removeAuthenticationToken)).toHaveBeenCalled()
   })

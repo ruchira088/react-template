@@ -15,7 +15,6 @@ import {
   login,
   logout,
   getAuthenticatedUser,
-  REDIRECT_QUERY_PARAMETER,
 } from "~/services/authentication/AuthenticationService"
 
 const mockAxiosPost = vi.mocked(axiosClient.post)
@@ -41,12 +40,6 @@ describe("AuthenticationService", () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-  })
-
-  describe("REDIRECT_QUERY_PARAMETER", () => {
-    test("should equal 'redirect'", () => {
-      expect(REDIRECT_QUERY_PARAMETER).toBe("redirect")
-    })
   })
 
   describe("login", () => {

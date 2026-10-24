@@ -3,8 +3,8 @@ import { Link, useNavigate, useSearchParams } from "react-router"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
-import { Option } from "~/types/Option"
-import { login, REDIRECT_QUERY_PARAMETER } from "~/services/authentication/AuthenticationService"
+import { login } from "~/services/authentication/AuthenticationService"
+import { REDIRECT_QUERY_PARAMETER, safeRedirectPath } from "~/services/authentication/Redirect"
 import smallLogo from "~/images/small-logo.svg"
 
 const ERROR_ID = "login-error"
@@ -31,10 +31,7 @@ const LoginPage = () => {
     try {
       await login(email, password)
 
-      const redirect = Option.fromNullable(searchParams.get(REDIRECT_QUERY_PARAMETER))
-        .getOrElse(() => "/")
-
-      navigate(redirect)
+      navigate(safeRedirectPath(searchParams.get(REDIRECT_QUERY_PARAMETER)))
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed.")
     } finally {

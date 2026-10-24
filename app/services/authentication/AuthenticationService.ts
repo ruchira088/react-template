@@ -10,8 +10,6 @@ import { zodParse } from "~/types/Zod"
 
 export { getAuthenticationToken, removeAuthenticationToken }
 
-export const REDIRECT_QUERY_PARAMETER = "redirect"
-
 export const login = async (email: string, password: string): Promise<AuthenticationToken> => {
   const response = await axiosClient.post("/authentication/login", { email, password })
   const authenticationToken = zodParse(AuthenticationToken, response.data)

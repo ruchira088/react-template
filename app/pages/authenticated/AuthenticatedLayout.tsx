@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate } from "react-router"
+import { Link, Outlet, useLocation, useNavigate, useOutletContext } from "react-router"
 import React, { useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { ThemeToggle } from "~/components/ThemeToggle"
@@ -7,17 +7,22 @@ import {
   getAuthenticatedUser,
   getAuthenticationToken,
   logout,
-  REDIRECT_QUERY_PARAMETER,
   removeAuthenticationToken
 } from "~/services/authentication/AuthenticationService"
+import { signInPath } from "~/services/authentication/Redirect"
 import smallLogo from "~/images/small-logo.svg"
-import type { Option } from "~/types/Option"
+import type { User } from "~/models/User"
+import { None, type Option, Some } from "~/types/Option"
+
+// The user validated by AuthenticatedLayout, for any page rendered inside it.
+export const useAuthenticatedUser = (): User => useOutletContext<User>()
 
 const AuthenticatedLayout = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   // Nothing behind the auth wall renders until the stored token has been
   // validated against the API, so a stale token never flashes protected content.
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [authenticatedUser, setAuthenticatedUser] = useState<Option<User>>(None.of())
 
   useEffect(() => {
     checkAuthentication()
@@ -26,7 +31,7 @@ const AuthenticatedLayout = () => {
   const checkAuthentication = async () => {
     const maybeToken: Option<AuthenticationToken> = getAuthenticationToken()
 
-    const redirectUrl = `/sign-in?${REDIRECT_QUERY_PARAMETER}=${window.location.pathname}`
+    const redirectUrl = signInPath(location)
 
     maybeToken.fold(
       () => {
@@ -35,8 +40,8 @@ const AuthenticatedLayout = () => {
       },
       async _ => {
         try {
-          await getAuthenticatedUser()
-          setIsAuthenticated(true)
+          const user = await getAuthenticatedUser()
+          setAuthenticatedUser(Some.of(user))
         } catch {
           removeAuthenticationToken()
           console.debug("Removing authentication token and redirecting to sign-in page.")
@@ -69,14 +74,14 @@ const AuthenticatedLayout = () => {
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          {isAuthenticated && (
+          {!authenticatedUser.isEmpty() && (
             <Button variant="ghost" onClick={signOut}>
               Sign out
             </Button>
           )}
         </div>
       </header>
-      {isAuthenticated && <Outlet />}
+      {authenticatedUser.map(user => <Outlet context={user} />).toNullable()}
     </>
   )
 }
