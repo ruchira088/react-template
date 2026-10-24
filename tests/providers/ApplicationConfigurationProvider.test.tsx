@@ -125,7 +125,7 @@ describe("ApplicationConfigurationProvider", () => {
     // The provider's default context value is None, so reading from it
     // outside a populated provider trips the getOrElse safety throw.
     expect(() => render(<Observer />)).toThrow(
-      /ApplicationConfigurationContext is not initialized/
+      /must be used within an initialised ApplicationConfigurationProvider/
     )
   })
 })

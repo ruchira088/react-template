@@ -62,14 +62,8 @@ export const ApplicationConfigurationProvider: FC<ApplicationConfigurationContex
 }
 
 export const useApplicationConfiguration = (): ApplicationConfigurationContext => {
-  const applicationConfigurationContext = React.useContext(ApplicationConfigurationContext)
-
-  if (applicationConfigurationContext == null) {
-    throw new Error("useApplicationConfiguration must be used within an ApplicationConfigurationProvider")
-  }
-
-  return applicationConfigurationContext.getOrElse(() => {
-      throw new Error("ApplicationConfigurationContext is not initialized")
-    }
-  )
+  // The context defaults to None, so this also covers use outside the provider.
+  return React.useContext(ApplicationConfigurationContext).getOrElse(() => {
+    throw new Error("useApplicationConfiguration must be used within an initialised ApplicationConfigurationProvider")
+  })
 }

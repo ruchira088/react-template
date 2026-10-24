@@ -53,7 +53,7 @@ jobs:
           format: markdown
           hide_complexity: true
           output: both
-          thresholds: "60 80"
+          thresholds: "90 95"
 
       - name: Write Coverage to Summary
         if: success() || failure()
