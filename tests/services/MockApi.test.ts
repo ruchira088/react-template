@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeEach } from "vitest"
+import { describe, expect, test, beforeEach, vi } from "vitest"
 import type { InternalAxiosRequestConfig } from "axios"
 import { AxiosError, AxiosHeaders } from "axios"
 
@@ -52,6 +52,19 @@ describe("MockApi adapter", () => {
 
     expect(user.email).toBe("alice@example.com")
     expect(user.role).toBe(Role.User)
+  })
+
+  test("GET /authentication/user survives a page reload", async () => {
+    await mockApiAdapter(
+      buildConfig("post", "/authentication/login", { email: "carol@example.com", password: "pw" })
+    )
+
+    // A reload re-evaluates the module, wiping anything held in memory.
+    vi.resetModules()
+    const reloaded = await import("~/services/http/MockApi")
+
+    const response = await reloaded.mockApiAdapter(buildConfig("get", "/authentication/user"))
+    expect(zodParse(User, response.data).email).toBe("carol@example.com")
   })
 
   test("GET /authentication/user returns 401 when no login has occurred", async () => {

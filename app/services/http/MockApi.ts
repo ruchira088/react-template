@@ -1,5 +1,6 @@
 import type { AxiosAdapter, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
 import { AxiosError, AxiosHeaders } from "axios"
+import { type KeySpace, LocalKeyValueStore } from "~/services/kv-store/KeyValueStore"
 
 // Lightweight axios adapter used when VITE_MOCK_API=true so the template runs
 // end-to-end without a backend. Only the auth endpoints are mocked; any other
@@ -64,8 +65,22 @@ const parseBody = (data: unknown): Record<string, unknown> => {
 }
 
 // Email is captured at login time so the subsequent /authentication/user lookup
-// reflects who "signed in." This is process-memory only; reloads reset it.
-let lastLoginEmail: string | null = null
+// reflects who "signed in." It is persisted alongside the auth token so a page
+// reload doesn't sign the demo user out.
+const MockSessionKey = "SignedInEmail" as const
+
+const MockSessionKeySpace: KeySpace<typeof MockSessionKey, string> = {
+  name: "MockApi",
+  keyEncoder: {
+    encode: (key: typeof MockSessionKey): string => key
+  },
+  valueCodec: {
+    encode: (email: string): string => email,
+    decode: (value: string): string => value
+  }
+}
+
+const mockSessionStore = new LocalKeyValueStore(MockSessionKeySpace)
 
 export const mockApiAdapter: AxiosAdapter = async (config: AxiosRequestConfig) => {
   const internalConfig = config as InternalAxiosRequestConfig
@@ -91,26 +106,27 @@ export const mockApiAdapter: AxiosAdapter = async (config: AxiosRequestConfig) =
       )
     }
 
-    lastLoginEmail = email
+    mockSessionStore.put(MockSessionKey, email)
     return buildResponse(internalConfig, 200, buildToken())
   }
 
   if (method === "get" && url === "/authentication/user") {
-    if (!lastLoginEmail) {
-      throw new AxiosError(
-        "Not authenticated.",
-        "ERR_BAD_REQUEST",
-        internalConfig,
-        undefined,
-        buildResponse(internalConfig, 401, { message: "Not authenticated." })
-      )
-    }
-    return buildResponse(internalConfig, 200, buildUser(lastLoginEmail))
+    return mockSessionStore.get(MockSessionKey).fold(
+      () => {
+        throw new AxiosError(
+          "Not authenticated.",
+          "ERR_BAD_REQUEST",
+          internalConfig,
+          undefined,
+          buildResponse(internalConfig, 401, { message: "Not authenticated." })
+        )
+      },
+      email => buildResponse(internalConfig, 200, buildUser(email))
+    )
   }
 
   if (method === "delete" && url === "/authentication/logout") {
-    const email = lastLoginEmail ?? "demo@example.com"
-    lastLoginEmail = null
+    const email = mockSessionStore.remove(MockSessionKey).getOrElse(() => "demo@example.com")
     return buildResponse(internalConfig, 200, buildUser(email))
   }
 
@@ -125,5 +141,5 @@ export const mockApiAdapter: AxiosAdapter = async (config: AxiosRequestConfig) =
 
 // Exposed for tests so they can reset between cases.
 export const __resetMockApiState = () => {
-  lastLoginEmail = null
+  mockSessionStore.remove(MockSessionKey)
 }
